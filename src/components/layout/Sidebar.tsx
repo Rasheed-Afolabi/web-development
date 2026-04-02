@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { CalendarDays, CalendarRange, CalendarCheck, Target, Settings } from 'lucide-react';
-import { useGoalProgress } from '@/hooks/useGoalProgress';
-import { formatCurrency } from '@/lib/formatters';
+import { QuickStats } from '@/components/layout/QuickStats';
 
 const navItems = [
   { to: '/daily', label: 'Daily', Icon: CalendarDays },
@@ -12,8 +11,6 @@ const navItems = [
 ];
 
 export function Sidebar() {
-  const progress = useGoalProgress();
-
   return (
     <aside className="w-64 min-h-screen bg-bg-primary border-r border-border-subtle flex flex-col">
       <div className="p-6">
@@ -42,21 +39,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 mx-3 mb-4 rounded-xl bg-bg-secondary border border-border-subtle">
-        <p className="text-text-muted text-xs font-body mb-2">Savings Goal</p>
-        <p className="font-mono text-accent-green text-lg font-semibold">
-          {formatCurrency(progress.currentSaved)}
-        </p>
-        <div className="w-full h-1.5 bg-bg-tertiary rounded-full mt-2 overflow-hidden">
-          <div
-            className="h-full bg-accent-green rounded-full transition-all duration-1000"
-            style={{ width: `${Math.min(progress.percentComplete * 100, 100)}%` }}
-          />
-        </div>
-        <p className="text-text-muted text-xs mt-1.5 font-body">
-          of {formatCurrency(progress.targetAmount)}
-        </p>
-      </div>
+      <QuickStats />
     </aside>
   );
 }
