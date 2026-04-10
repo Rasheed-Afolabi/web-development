@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELPIP Study Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border-color: #dee2e6;
+            --accent-blue: #4361ee;
+            --accent-blue-light: #eef1ff;
+            --accent-green: #10b981;
+            --accent-green-light: #d1fae5;
+            --accent-orange: #f59e0b;
+            --accent-orange-light: #fef3c7;
+            --accent-red: #ef4444;
+            --accent-red-light: #fee2e2;
+            --accent-purple: #8b5cf6;
+            --accent-purple-light: #ede9fe;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --transition: all 0.2s ease;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 24px;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .logo .tagline {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3451d1;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: var(--accent-red-light);
+            color: var(--accent-red);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 16px;
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 50;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .filter-group {
+            margin-bottom: 16px;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-light);
+        }
+
+        .quick-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .quick-nav-item {
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-nav-item:hover, .quick-nav-item.active {
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+        }
+
+        .quick-nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 24px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main.expanded {
+            margin-left: 0;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* Stats */
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-card.accent-blue { border-left: 4px solid var(--accent-blue); }
+        .stat-card.accent-green { border-left: 4px solid var(--accent-green); }
+        .stat-card.accent-orange { border-left: 4px solid var(--accent-orange); }
+        .stat-card.accent-purple { border-left: 4px solid var(--accent-purple); }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .progress-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.listening { background: var(--accent-blue); }
+        .progress-fill.reading { background: var(--accent-green); }
+        .progress-fill.writing { background: var(--accent-orange); }
+        .progress-fill.speaking { background: var(--accent-purple); }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .task-item.done .task-checkbox {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .task-item.in-progress .task-checkbox {
+            background: var(--accent-orange-light);
+            border-color: var(--accent-orange);
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .task-item.done .task-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .badge-listening { background: var(--accent-blue-light); color: var(--accent-blue); }
+        .badge-reading { background: var(--accent-green-light); color: var(--accent-green); }
+        .badge-writing { background: var(--accent-orange-light); color: var(--accent-orange); }
+        .badge-speaking { background: var(--accent-purple-light); color: var(--accent-purple); }
+        .badge-easy { background: #d1fae5; color: #059669; }
+        .badge-medium { background: #fef3c7; color: #d97706; }
+        .badge-hard { background: #fee2e2; color: #dc2626; }
+        .badge-all.skills { background: var(--accent-blue-light); color: var(--accent-blue); }
+
+        .task-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* Resource List */
+        .resource-group {
+            margin-bottom: 24px;
+        }
+
+        .resource-group-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .resource-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .resource-info {
+            flex: 1;
+        }
+
+        .resource-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .resource-notes {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .resource-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .resource-link:hover {
+            background: var(--accent-blue-light);
+        }
+
+        /* Chart */
+        .chart-container {
+            padding: 16px 0;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 150px;
+            gap: 8px;
+            padding: 0 8px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 36px;
+            background: var(--accent-blue);
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            transition: height 0.3s ease;
+        }
+
+        .bar-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .bar-value {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-light);
+        }
+
+        /* Timer */
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-primary);
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Today Section */
+        .today-card {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #6366f1 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .today-card .card-title {
+            color: white;
+            opacity: 0.9;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .today-card .stat-value {
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .today-card .stat-label {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .today-tasks {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .today-task-item {
+            background: rgba(255,255,255,0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .today-task-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .today-task-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-start {
+            background: white;
+            color: var(--accent-blue);
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+        }
+
+        /* Weekly Goal */
+        .weekly-goal {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+        }
+
+        .weekly-goal-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .weekly-goal-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+            .header-actions { gap: 4px; }
+            .btn { padding: 8px 12px; font-size: 0.8rem; }
+            .btn span { display: none; }
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .status-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .status-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .status-btn:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .status-btn.active {
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+        }
+
+        .status-btn.done.active {
+            border-color: var(--accent-green);
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+
+        .status-btn.in-progress.active {
+            border-color: var(--accent-orange);
+            background: var(--accent-orange-light);
+            color: var(--accent-orange);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 40;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .add-form {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .add-form.active {
+            display: block;
+        }
+
+        .add-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: var(--transition);
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo">
+                <h1>CELPIP Study Dashboard</h1>
+                <span class="tagline">Plan &rarr; Practice &rarr; Track &rarr; Improve</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportData()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                <span>Export</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                <span>Import</span>
+            </button>
+            <input type="file" id="importFile" class="file-input" accept=".json" onchange="importData(event)">
+            <button class="btn btn-danger btn-sm" onclick="showResetModal()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span>Reset</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Layout -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Navigation</div>
+                <nav class="quick-nav">
+                    <a class="quick-nav-item active" data-panel="dashboard" onclick="switchPanel('dashboard')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a class="quick-nav-item" data-panel="tasks" onclick="switchPanel('tasks')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        Study Plan
+                    </a>
+                    <a class="quick-nav-item" data-panel="resources" onclick="switchPanel('resources')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path>
+                        </svg>
+                        Resources
+                    </a>
+                    <a class="quick-nav-item" data-panel="analytics" onclick="switchPanel('analytics')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                        Analytics
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Filters</div>
+                <div class="filter-group">
+                    <label class="filter-label">Search Tasks</label>
+                    <input type="text" class="filter-input" id="searchInput" placeholder="Search..." oninput="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Skill</label>
+                    <select class="filter-select" id="filterSkill" onchange="applyFilters()">
+                        <option value="">All Skills</option>
+                        <option value="Listening">Listening</option>
+                        <option value="Reading">Reading</option>
+                        <option value="Writing">Writing</option>
+                        <option value="Speaking">Speaking</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Difficulty</label>
+                    <select class="filter-select" id="filterDifficulty" onchange="applyFilters()">
+                        <option value="">All Levels</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Sort By</label>
+                    <select class="filter-select" id="sortBy" onchange="applyFilters()">
+                        <option value="default">Default</option>
+                        <option value="difficulty">Difficulty</option>
+                        <option value="time">Estimated Time</option>
+                        <option value="status">Status</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main" id="main">
+            <!-- Dashboard Panel -->
+            <section class="panel active" id="panel-dashboard">
+                <div class="grid grid-4" style="margin-bottom: 20px;">
+                    <div class="stat-card accent-blue">
+                        <div class="stat-value" id="stat-total">0%</div>
+                        <div class="stat-label">Overall Progress</div>
+                    </div>
+                    <div class="stat-card accent-green">
+                        <div class="stat-value" id="stat-completed">0</div>
+                        <div class="stat-label">Tasks Completed</div>
+                    </div>
+                    <div class="stat-card accent-orange">
+                        <div class="stat-value" id="stat-time">0h</div>
+                        <div class="stat-label">Total Study Time</div>
+                    </div>
+                    <div class="stat-card accent-purple">
+                        <div class="stat-value" id="stat-streak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div>
+                        <div class="today-card">
+                            <div class="card-title">TODAY'S FOCUS</div>
+                            <div id="today-tasks"></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Progress by Skill</div>
+                            </div>
+                            <div id="skill-progress"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Weekly Goal</div>
+                            </div>
+                            <div class="weekly-goal">
+                                <span>Target:</span>
+                                <input type="number" class="weekly-goal-input" id="weeklyGoalInput" value="120" min="0" onchange="updateWeeklyGoal()">
+                                <span>minutes/week</span>
+                            </div>
+                            <div id="weekly-progress"></div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">Activity (Last 14 Days)</div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="bar-chart" id="activity-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tasks Panel -->
+            <section class="panel" id="panel-tasks">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Study Plan</div>
+                        <button class="btn btn-primary btn-sm" onclick="toggleAddTaskForm()">+ Add Task</button>
+                    </div>
+
+                    <div class="add-form" id="addTaskForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-input" id="newTaskTitle" placeholder="Task title">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Skill</label>
+                                <select class="form-select" id="newTaskSkill">
+                                    <option value="Listening">Listening</option>
+                                    <option value="Reading">Reading</option>
+                                    <option value="Writing">Writing</option>
+                                    <option value="Speaking">Speaking</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Difficulty</label>
+                                <select class="form-select" id="newTaskDifficulty">
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Est. Minutes</label>
+                                <input type="number" class="form-input" id="newTaskMinutes" placeholder="30" value="30" min="1">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Resource Link (optional)</label>
+                            <input type="text" class="form-input" id="newTaskLink" placeholder="https://...">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+                            <button class="btn btn-secondary" onclick="toggleAddTaskForm()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="task-list" id="task-list"></div>
+                </div>
+            </section>
+
+            <!-- Resources Panel -->
+            <section class="panel" id="panel-resources">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Resources Library</div>
+                        <button class="btn btn-primary btn-sm" onclick="toggleAddResourceForm()">+ Add Resource</button>
+                    </div>
+
+                    <div class="add-form" id="addResourceForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-input" id="newResourceName" placeholder="Resource name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Skill</label>
+                                <select class="form-select" id="newResourceSkill">
+                                    <option value="Listening">Listening</option>
+                                    <option value="Reading">Reading</option>
+                                    <option value="Writing">Writing</option>
+                                    <option value="Speaking">Speaking</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Difficulty</label>
+                                <select class="form-select" id="newResourceDifficulty">
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">URL</label>
+                            <input type="text" class="form-input" id="newResourceUrl" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Notes</label>
+                            <input type="text" class="form-input" id="newResourceNotes" placeholder="Brief description">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button class="btn btn-primary" onclick="addResource()">Add Resource</button>
+                            <button class="btn btn-secondary" onclick="toggleAddResourceForm()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <button class="tab active" onclick="filterResources('all', this)">All</button>
+                        <button class="tab" onclick="filterResources('All Skills', this)">Essential</button>
+                        <button class="tab" onclick="filterResources('Listening', this)">Listening</button>
+                        <button class="tab" onclick="filterResources('Reading', this)">Reading</button>
+                        <button class="tab" onclick="filterResources('Writing', this)">Writing</button>
+                        <button class="tab" onclick="filterResources('Speaking', this)">Speaking</button>
+                    </div>
+
+                    <div id="resources-list"></div>
+                </div>
+            </section>
+
+            <!-- Analytics Panel -->
+            <section class="panel" id="panel-analytics">
+                <div class="grid grid-4" style="margin-bottom: 20px;">
+                    <div class="stat-card accent-blue">
+                        <div class="stat-value" id="analytics-listening">0%</div>
+                        <div class="stat-label">Listening</div>
+                    </div>
+                    <div class="stat-card accent-green">
+                        <div class="stat-value" id="analytics-reading">0%</div>
+                        <div class="stat-label">Reading</div>
+                    </div>
+                    <div class="stat-card accent-orange">
+                        <div class="stat-value" id="analytics-writing">0%</div>
+                        <div class="stat-label">Writing</div>
+                    </div>
+                    <div class="stat-card accent-purple">
+                        <div class="stat-value" id="analytics-speaking">0%</div>
+                        <div class="stat-label">Speaking</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Completion by Skill</div>
+                        </div>
+                        <div id="analytics-skill-bars"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Study Statistics</div>
+                        </div>
+                        <div id="analytics-stats"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Daily Activity (Tasks Completed)</div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="bar-chart" id="analytics-chart" style="height: 200px;"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Task Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTaskTitle">Task Details</span>
+                <button class="modal-close" onclick="closeTaskModal()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <div class="status-buttons" id="statusButtons">
+                        <button class="status-btn" data-status="Not Started" onclick="setTaskStatus('Not Started')">Not Started</button>
+                        <button class="status-btn in-progress" data-status="In Progress" onclick="setTaskStatus('In Progress')">In Progress</button>
+                        <button class="status-btn done" data-status="Done" onclick="setTaskStatus('Done')">Done</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Timer</label>
+                    <div class="timer-display" id="timerDisplay">00:00:00</div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" id="timerStartBtn" onclick="toggleTimer()">Start</button>
+                        <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-textarea" id="taskNotes" placeholder="Add your notes here..."></textarea>
+                </div>
+
+                <div id="taskResourceLink"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="deleteTask()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveTaskChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <span class="modal-title">Confirm Reset</span>
+                <button class="modal-close" onclick="closeResetModal()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all progress? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeResetModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="resetAllData()">Reset Everything</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================
+        // DATA STRUCTURE
+        // =====================
+        const defaultData = {
+            tasks: [
+                // Listening Tasks
+                { id: 1, title: "Take Official CELPIP Free Practice Test (Listening)", skill: "Listening", difficulty: "Medium", estimated_minutes: 50, resource_link: "https://www.celpip.ca/prepare-for-celpip/free-practice-tests/", status: "Not Started", notes: "ESSENTIAL FIRST STEP - Create account for bonus free test!", date_completed: null, time_spent: 0 },
+                { id: 2, title: "Watch HZad Education Listening Strategies", skill: "Listening", difficulty: "Easy", estimated_minutes: 30, resource_link: "https://www.youtube.com/@HZadEducation", status: "Not Started", notes: "Focus on note-taking techniques - community favorite", date_completed: null, time_spent: 0 },
+                { id: 3, title: "Practice with CBC News (Canadian accent)", skill: "Listening", difficulty: "Medium", estimated_minutes: 20, resource_link: "https://www.cbc.ca/news", status: "Not Started", notes: "Daily practice - similar to CELPIP Task 4 format", date_completed: null, time_spent: 0 },
+                { id: 4, title: "Mad English TV - Listening Practice", skill: "Listening", difficulty: "Medium", estimated_minutes: 35, resource_link: "https://www.youtube.com/@MadEnglishTV", status: "Not Started", notes: "Realistic scenarios with different accents", date_completed: null, time_spent: 0 },
+                { id: 5, title: "TED Talks - Advanced Listening (9+ scores)", skill: "Listening", difficulty: "Hard", estimated_minutes: 40, resource_link: "https://www.ted.com/talks", status: "Not Started", notes: "Complex academic content for high scores", date_completed: null, time_spent: 0 },
+                { id: 6, title: "HZad AI Mock Test - Listening with Feedback", skill: "Listening", difficulty: "Hard", estimated_minutes: 50, resource_link: "https://hzadeducation.com/celpipaitests/", status: "Not Started", notes: "FREE AI-scored mock test with instant feedback", date_completed: null, time_spent: 0 },
+
+                // Reading Tasks
+                { id: 7, title: "Take Official CELPIP Free Practice Test (Reading)", skill: "Reading", difficulty: "Medium", estimated_minutes: 55, resource_link: "https://www.celpip.ca/prepare-for-celpip/free-practice-tests/", status: "Not Started", notes: "ESSENTIAL - Understand all 4 reading task types", date_completed: null, time_spent: 0 },
+                { id: 8, title: "Study Score Comparison Chart (Reading examples)", skill: "Reading", difficulty: "Easy", estimated_minutes: 30, resource_link: "https://www.celpip.ca/prepare-for-celpip/score-comparison-chart-2/", status: "Not Started", notes: "See what Level 9-10 responses look like", date_completed: null, time_spent: 0 },
+                { id: 9, title: "Read Globe and Mail articles daily", skill: "Reading", difficulty: "Medium", estimated_minutes: 20, resource_link: "https://www.theglobeandmail.com/", status: "Not Started", notes: "Build reading speed and Canadian vocabulary", date_completed: null, time_spent: 0 },
+                { id: 10, title: "Presto English - Reading Strategies Video", skill: "Reading", difficulty: "Medium", estimated_minutes: 25, resource_link: "https://www.youtube.com/@PrestoEnglish", status: "Not Started", notes: "Learn skimming/scanning techniques", date_completed: null, time_spent: 0 },
+                { id: 11, title: "Read Maclean's Magazine (Complex topics)", skill: "Reading", difficulty: "Hard", estimated_minutes: 30, resource_link: "https://macleans.ca/", status: "Not Started", notes: "Advanced Canadian content for 9+ scores", date_completed: null, time_spent: 0 },
+                { id: 12, title: "HZad AI Mock Test - Timed Reading Practice", skill: "Reading", difficulty: "Hard", estimated_minutes: 55, resource_link: "https://hzadeducation.com/celpipaitests/", status: "Not Started", notes: "Practice under real exam time pressure", date_completed: null, time_spent: 0 },
+
+                // Writing Tasks
+                { id: 13, title: "Watch HZad Writing Templates Series (7 videos)", skill: "Writing", difficulty: "Medium", estimated_minutes: 60, resource_link: "https://www.youtube.com/watch?v=ZjP2PNFegq8&list=PLWF0AW0Ncw0QRhW9kVEv3n5V7WiVFEhUq", status: "Not Started", notes: "HIGHLY RECOMMENDED - templates that got people 10+", date_completed: null, time_spent: 0 },
+                { id: 14, title: "Study Level 9-10 Writing Samples", skill: "Writing", difficulty: "Easy", estimated_minutes: 30, resource_link: "https://www.celpip.ca/prepare-for-celpip/score-comparison-chart-2/", status: "Not Started", notes: "Official samples - learn exact format raters want", date_completed: null, time_spent: 0 },
+                { id: 15, title: "Practice Task 1: Formal Email Writing", skill: "Writing", difficulty: "Medium", estimated_minutes: 30, resource_link: "https://ottawa-english.com/celpip-writing-topics/", status: "Not Started", notes: "Master proper email openings/closings", date_completed: null, time_spent: 0 },
+                { id: 16, title: "Practice Task 2: Survey Response (Opinion)", skill: "Writing", difficulty: "Medium", estimated_minutes: 30, resource_link: "https://ottawa-english.com/celpip-writing-topics/", status: "Not Started", notes: "Structure: intro, 2-3 points + examples, conclusion", date_completed: null, time_spent: 0 },
+                { id: 17, title: "Use Grammarly for Writing Practice", skill: "Writing", difficulty: "Easy", estimated_minutes: 20, resource_link: "https://www.grammarly.com/", status: "Not Started", notes: "Reddit tip: Fix grammar issues before test day", date_completed: null, time_spent: 0 },
+                { id: 18, title: "HZad AI Mock Test - Writing with Feedback", skill: "Writing", difficulty: "Hard", estimated_minutes: 45, resource_link: "https://hzadeducation.com/celpipaitests/", status: "Not Started", notes: "FREE instant AI feedback on your writing", date_completed: null, time_spent: 0 },
+
+                // Speaking Tasks
+                { id: 19, title: "Watch HZad Speaking Series (All 8 Tasks)", skill: "Speaking", difficulty: "Medium", estimated_minutes: 90, resource_link: "https://www.youtube.com/@HZadEducation", status: "Not Started", notes: "MOST RECOMMENDED - covers all 8 speaking tasks", date_completed: null, time_spent: 0 },
+                { id: 20, title: "Study Official Speaking Score Descriptors", skill: "Speaking", difficulty: "Easy", estimated_minutes: 25, resource_link: "https://www.celpip.ca/prepare-for-celpip/score-comparison-chart-2/", status: "Not Started", notes: "Understand exactly what raters evaluate", date_completed: null, time_spent: 0 },
+                { id: 21, title: "Practice Recording Yourself (Tasks 1-4)", skill: "Speaking", difficulty: "Medium", estimated_minutes: 30, resource_link: "https://prestoenglish.com/celpip-sample-speaking-test", status: "Not Started", notes: "Record and compare to sample answers", date_completed: null, time_spent: 0 },
+                { id: 22, title: "Practice Recording Yourself (Tasks 5-8)", skill: "Speaking", difficulty: "Medium", estimated_minutes: 30, resource_link: "https://prestoenglish.com/celpip-sample-speaking-test", status: "Not Started", notes: "Focus on Task 6 (difficult situation) & Task 8", date_completed: null, time_spent: 0 },
+                { id: 23, title: "Mad English TV - Speaking Mock Tests", skill: "Speaking", difficulty: "Hard", estimated_minutes: 40, resource_link: "https://www.youtube.com/@MadEnglishTV", status: "Not Started", notes: "Timed scenarios with realistic prompts", date_completed: null, time_spent: 0 },
+                { id: 24, title: "HZad AI Mock Test - Speaking with Feedback", skill: "Speaking", difficulty: "Hard", estimated_minutes: 45, resource_link: "https://hzadeducation.com/celpipaitests/", status: "Not Started", notes: "FREE AI feedback on pronunciation & fluency", date_completed: null, time_spent: 0 }
+            ],
+            resources: [
+                { id: 1, name: "Official CELPIP Free Practice Tests", skill: "All Skills", difficulty: "Medium", url: "https://www.celpip.ca/prepare-for-celpip/free-practice-tests/", notes: "MUST DO FIRST - 2 free tests + 1 more when you create account" },
+                { id: 2, name: "CELPIP Score Comparison Chart", skill: "All Skills", difficulty: "Easy", url: "https://www.celpip.ca/prepare-for-celpip/score-comparison-chart-2/", notes: "See exactly what Level 9-12 responses look like" },
+                { id: 3, name: "HZad Education YouTube", skill: "All Skills", difficulty: "Medium", url: "https://www.youtube.com/@HZadEducation", notes: "Reddit/YouTube favorite - templates that got people 10+" },
+                { id: 4, name: "HZad FREE AI Mock Tests", skill: "All Skills", difficulty: "Medium", url: "https://hzadeducation.com/celpipaitests/", notes: "FREE unlimited practice with instant AI feedback - all 4 modules" },
+                { id: 5, name: "Official CELPIP YouTube (20+ hrs free)", skill: "All Skills", difficulty: "Easy", url: "https://www.youtube.com/@CELPIPTestOfficial", notes: "Webinars, CELPIP Live, Rate the Response series" },
+                { id: 6, name: "Official CELPIP Webinars", skill: "All Skills", difficulty: "Medium", url: "https://www.celpip.ca/prepare-for-celpip/free-resources/", notes: "10+ hours expert sessions - attend live for Q&A" },
+                { id: 7, name: "HZad 10 Best Listening Tips", skill: "Listening", difficulty: "Medium", url: "https://hzadeducation.com/2024/12/23/10-best-celpip-listening-tips/", notes: "Note-taking strategies, handling accents" },
+                { id: 8, name: "CBC News (Canadian accent)", skill: "Listening", difficulty: "Easy", url: "https://www.cbc.ca/news", notes: "Daily practice - similar to Task 4 news format" },
+                { id: 9, name: "Mad English TV", skill: "Listening", difficulty: "Medium", url: "https://www.youtube.com/@MadEnglishTV", notes: "Popular for realistic scenarios & pronunciation" },
+                { id: 10, name: "CBC Learning English", skill: "Listening", difficulty: "Easy", url: "https://www.cbc.ca/learning-english", notes: "Official recommendation from CELPIP podcast" },
+                { id: 11, name: "TED Talks (Advanced)", skill: "Listening", difficulty: "Hard", url: "https://www.ted.com/talks", notes: "Complex academic content for 9+ scores" },
+                { id: 12, name: "Presto English - Reading Strategies", skill: "Reading", difficulty: "Medium", url: "https://www.youtube.com/@PrestoEnglish", notes: "Skimming, scanning, keyword matching" },
+                { id: 13, name: "Globe and Mail", skill: "Reading", difficulty: "Medium", url: "https://www.theglobeandmail.com/", notes: "Canadian news - build vocabulary & speed" },
+                { id: 14, name: "Maclean's Magazine", skill: "Reading", difficulty: "Hard", url: "https://macleans.ca/", notes: "Complex Canadian topics for 9+ scores" },
+                { id: 15, name: "Canadian Encyclopedia", skill: "Reading", difficulty: "Medium", url: "https://www.thecanadianencyclopedia.ca/", notes: "Practice paraphrasing main ideas" },
+                { id: 16, name: "HZad Writing Templates (7 Videos)", skill: "Writing", difficulty: "Medium", url: "https://www.youtube.com/watch?v=ZjP2PNFegq8&list=PLWF0AW0Ncw0QRhW9kVEv3n5V7WiVFEhUq", notes: "ESSENTIAL - exact templates that got people 10+" },
+                { id: 17, name: "Ottawa English - Writing Topics", skill: "Writing", difficulty: "Medium", url: "https://ottawa-english.com/celpip-writing-topics/", notes: "Practice topics with timed YouTube mock tests" },
+                { id: 18, name: "Grammarly (Free)", skill: "Writing", difficulty: "Easy", url: "https://www.grammarly.com/", notes: "Reddit tip: Catch grammar errors in practice" },
+                { id: 19, name: "CELPIP Writing Score Samples", skill: "Writing", difficulty: "Easy", url: "https://www.celpip.ca/prepare-for-celpip/free-resources/writing-scores/", notes: "Official Level 9-12 writing examples" },
+                { id: 20, name: "HZad Speaking Series (All 8 Tasks)", skill: "Speaking", difficulty: "Medium", url: "https://www.youtube.com/@HZadEducation", notes: "MOST RECOMMENDED - templates for each task" },
+                { id: 21, name: "Presto English - Speaking Samples", skill: "Speaking", difficulty: "Medium", url: "https://prestoenglish.com/celpip-sample-speaking-test", notes: "All 8 tasks with sample responses" },
+                { id: 22, name: "Mad English TV - Speaking Practice", skill: "Speaking", difficulty: "Hard", url: "https://www.youtube.com/@MadEnglishTV", notes: "Timed practice, pronunciation tips" },
+                { id: 23, name: "CELPIP Speaking Pro (Official-Paid)", skill: "Speaking", difficulty: "Hard", url: "https://www.celpip.ca/prepare-for-celpip/study-materials/", notes: "Reddit: Worth it if stuck at 8, targeting 9+" },
+                { id: 24, name: "CELTESTPIP Practice Platform", skill: "All Skills", difficulty: "Medium", url: "https://www.celtestpip.com/", notes: "3000+ questions, 50 mock exams, AI scoring" },
+                { id: 25, name: "PrepCELPIP Mock Test", skill: "All Skills", difficulty: "Medium", url: "https://prepcelpip.com/celpip-mock-test", notes: "Realistic exam simulator with CLB estimation" },
+                { id: 26, name: "CanadaVisa Forum - CELPIP Tips", skill: "All Skills", difficulty: "Easy", url: "https://www.canadavisa.com/canada-immigration-discussion-board/forums/celpip.122/", notes: "Real test-taker experiences and strategies" }
+            ],
+            settings: { weeklyGoal: 120 },
+            logs: {},
+            currentResourceFilter: 'all'
+        };
+
+        let state = {};
+        let currentTaskId = null;
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerRunning = false;
+
+        // =====================
+        // INITIALIZATION
+        // =====================
+        function init() {
+            loadState();
+            renderAll();
+            updateStreak();
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('celpipDashboard');
+            if (saved) {
+                state = JSON.parse(saved);
+                if (!state.settings) state.settings = { weeklyGoal: 120 };
+                if (!state.logs) state.logs = {};
+                if (!state.resources) state.resources = defaultData.resources;
+                if (!state.currentResourceFilter) state.currentResourceFilter = 'all';
+            } else {
+                state = JSON.parse(JSON.stringify(defaultData));
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('celpipDashboard', JSON.stringify(state));
+        }
+
+        function renderAll() {
+            renderDashboard();
+            renderTasks();
+            renderResources();
+            renderAnalytics();
+        }
+
+        // =====================
+        // DASHBOARD
+        // =====================
+        function renderDashboard() {
+            const totalTasks = state.tasks.length;
+            const completedTasks = state.tasks.filter(t => t.status === 'Done').length;
+            const percentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+            document.getElementById('stat-total').textContent = percentage + '%';
+            document.getElementById('stat-completed').textContent = completedTasks;
+
+            const totalMinutes = state.tasks.reduce((sum, t) => sum + (t.time_spent || 0), 0);
+            const hours = Math.floor(totalMinutes / 60);
+            const mins = totalMinutes % 60;
+            document.getElementById('stat-time').textContent = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+            document.getElementById('stat-streak').textContent = calculateStreak();
+
+            renderTodayTasks();
+            renderSkillProgress();
+
+            document.getElementById('weeklyGoalInput').value = state.settings.weeklyGoal;
+            renderWeeklyProgress();
+            renderActivityChart('activity-chart');
+        }
+
+        function renderTodayTasks() {
+            const container = document.getElementById('today-tasks');
+            const inProgressTasks = state.tasks.filter(t => t.status === 'In Progress').slice(0, 3);
+            const notStartedTasks = state.tasks.filter(t => t.status === 'Not Started').slice(0, 3 - inProgressTasks.length);
+            const todayTasks = [...inProgressTasks, ...notStartedTasks];
+
+            if (todayTasks.length === 0) {
+                container.innerHTML = '<div class="stat-value">All caught up!</div><div class="stat-label">Great work!</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="today-tasks">
+                    ${todayTasks.map(task => `
+                        <div class="today-task-item">
+                            <span class="today-task-title">${task.title}</span>
+                            <button class="btn-start" onclick="openTaskModal(${task.id})">Start</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderSkillProgress() {
+            const container = document.getElementById('skill-progress');
+            const skills = ['Listening', 'Reading', 'Writing', 'Speaking'];
+
+            container.innerHTML = skills.map(skill => {
+                const skillTasks = state.tasks.filter(t => t.skill === skill);
+                const completed = skillTasks.filter(t => t.status === 'Done').length;
+                const total = skillTasks.length;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                return `
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-label">${skill}</span>
+                            <span class="progress-value">${completed}/${total}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${skill.toLowerCase()}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderWeeklyProgress() {
+            const container = document.getElementById('weekly-progress');
+            const weekStart = getWeekStart();
+            const weeklyMinutes = getWeeklyMinutes(weekStart);
+            const goal = state.settings.weeklyGoal;
+            const percentage = Math.min(100, Math.round((weeklyMinutes / goal) * 100));
+
+            container.innerHTML = `
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="progress-label">This Week</span>
+                        <span class="progress-value">${weeklyMinutes}/${goal} min</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill listening" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderActivityChart(containerId) {
+            const container = document.getElementById(containerId);
+            const days = [];
+            const today = new Date();
+
+            for (let i = 13; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayLog = state.logs[dateStr] || { tasksCompleted: 0, minutesStudied: 0 };
+                days.push({
+                    date: date,
+                    label: date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0) + date.getDate(),
+                    value: dayLog.tasksCompleted
+                });
+            }
+
+            const maxValue = Math.max(...days.map(d => d.value), 1);
+
+            container.innerHTML = days.map(day => `
+                <div class="bar-wrapper">
+                    <span class="bar-value">${day.value || ''}</span>
+                    <div class="bar" style="height: ${day.value > 0 ? Math.max(10, (day.value / maxValue) * 100) : 4}%"></div>
+                    <span class="bar-label">${day.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 365; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const log = state.logs[dateStr];
+
+                if (i === 0 && !log) continue;
+                if (log && (log.tasksCompleted > 0 || log.minutesStudied > 0)) {
+                    streak++;
+                } else if (i > 0) {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function updateStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            if (!state.logs[today]) {
+                state.logs[today] = { tasksCompleted: 0, minutesStudied: 0 };
+            }
+        }
+
+        function getWeekStart() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(now.setDate(diff));
+        }
+
+        function getWeeklyMinutes(weekStart) {
+            let total = 0;
+            const start = new Date(weekStart);
+            start.setHours(0, 0, 0, 0);
+
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(start);
+                date.setDate(date.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                if (state.logs[dateStr]) {
+                    total += state.logs[dateStr].minutesStudied || 0;
+                }
+            }
+            return total;
+        }
+
+        function updateWeeklyGoal() {
+            state.settings.weeklyGoal = parseInt(document.getElementById('weeklyGoalInput').value) || 120;
+            saveState();
+            renderWeeklyProgress();
+        }
+
+        // =====================
+        // TASKS
+        // =====================
+        function renderTasks() {
+            const container = document.getElementById('task-list');
+            let tasks = [...state.tasks];
+
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const skillFilter = document.getElementById('filterSkill').value;
+            const difficultyFilter = document.getElementById('filterDifficulty').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            if (search) tasks = tasks.filter(t => t.title.toLowerCase().includes(search));
+            if (skillFilter) tasks = tasks.filter(t => t.skill === skillFilter);
+            if (difficultyFilter) tasks = tasks.filter(t => t.difficulty === difficultyFilter);
+            if (statusFilter) tasks = tasks.filter(t => t.status === statusFilter);
+
+            const difficultyOrder = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+            const statusOrder = { 'Not Started': 1, 'In Progress': 2, 'Done': 3 };
+
+            if (sortBy === 'difficulty') tasks.sort((a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]);
+            else if (sortBy === 'time') tasks.sort((a, b) => a.estimated_minutes - b.estimated_minutes);
+            else if (sortBy === 'status') tasks.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg><p>No tasks found</p></div>';
+                return;
+            }
+
+            container.innerHTML = tasks.map(task => `
+                <div class="task-item ${task.status === 'Done' ? 'done' : ''} ${task.status === 'In Progress' ? 'in-progress' : ''}" onclick="openTaskModal(${task.id})">
+                    <div class="task-checkbox">
+                        ${task.status === 'Done' ? '<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" stroke="white" stroke-width="3" fill="none"></polyline></svg>' : ''}
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="badge badge-${task.skill.toLowerCase()}">${task.skill}</span>
+                            <span class="badge badge-${task.difficulty.toLowerCase()}">${task.difficulty}</span>
+                        </div>
+                    </div>
+                    <div class="task-time">${task.estimated_minutes} min</div>
+                </div>
+            `).join('');
+        }
+
+        function applyFilters() { renderTasks(); }
+
+        function toggleAddTaskForm() {
+            document.getElementById('addTaskForm').classList.toggle('active');
+        }
+
+        function addTask() {
+            const title = document.getElementById('newTaskTitle').value.trim();
+            if (!title) return alert('Please enter a task title');
+
+            state.tasks.push({
+                id: Date.now(),
+                title: title,
+                skill: document.getElementById('newTaskSkill').value,
+                difficulty: document.getElementById('newTaskDifficulty').value,
+                estimated_minutes: parseInt(document.getElementById('newTaskMinutes').value) || 30,
+                resource_link: document.getElementById('newTaskLink').value.trim(),
+                status: 'Not Started',
+                notes: '',
+                date_completed: null,
+                time_spent: 0
+            });
+
+            saveState();
+            renderAll();
+            toggleAddTaskForm();
+            document.getElementById('newTaskTitle').value = '';
+            document.getElementById('newTaskLink').value = '';
+        }
+
+        function openTaskModal(taskId) {
+            currentTaskId = taskId;
+            const task = state.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            document.getElementById('modalTaskTitle').textContent = task.title;
+            document.getElementById('taskNotes').value = task.notes || '';
+
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.status === task.status) btn.classList.add('active');
+            });
+
+            const linkContainer = document.getElementById('taskResourceLink');
+            linkContainer.innerHTML = task.resource_link
+                ? `<div class="form-group"><label class="form-label">Resource</label><a href="${task.resource_link}" target="_blank" class="btn btn-secondary" style="width: 100%; justify-content: center;">Open Resource</a></div>`
+                : '';
+
+            timerSeconds = Math.floor((task.time_spent || 0) * 60);
+            updateTimerDisplay();
+            timerRunning = false;
+            document.getElementById('timerStartBtn').textContent = 'Start';
+            document.getElementById('taskModal').classList.add('active');
+        }
+
+        function closeTaskModal() {
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            timerRunning = false;
+            currentTaskId = null;
+            document.getElementById('taskModal').classList.remove('active');
+        }
+
+        function setTaskStatus(status) {
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.status === status) btn.classList.add('active');
+            });
+        }
+
+        function saveTaskChanges() {
+            const task = state.tasks.find(t => t.id === currentTaskId);
+            if (!task) return;
+
+            const activeStatusBtn = document.querySelector('.status-btn.active');
+            const newStatus = activeStatusBtn ? activeStatusBtn.dataset.status : task.status;
+            const wasNotDone = task.status !== 'Done';
+            const isNowDone = newStatus === 'Done';
+
+            task.status = newStatus;
+            task.notes = document.getElementById('taskNotes').value;
+            task.time_spent = timerSeconds / 60;
+
+            if (wasNotDone && isNowDone) {
+                task.date_completed = new Date().toISOString();
+                const today = new Date().toISOString().split('T')[0];
+                if (!state.logs[today]) state.logs[today] = { tasksCompleted: 0, minutesStudied: 0 };
+                state.logs[today].tasksCompleted++;
+            }
+
+            if (timerSeconds > 0) {
+                const today = new Date().toISOString().split('T')[0];
+                if (!state.logs[today]) state.logs[today] = { tasksCompleted: 0, minutesStudied: 0 };
+                state.logs[today].minutesStudied = (state.logs[today].minutesStudied || 0) + Math.floor(timerSeconds / 60);
+            }
+
+            saveState();
+            renderAll();
+            closeTaskModal();
+        }
+
+        function deleteTask() {
+            if (!confirm('Are you sure you want to delete this task?')) return;
+            state.tasks = state.tasks.filter(t => t.id !== currentTaskId);
+            saveState();
+            renderAll();
+            closeTaskModal();
+        }
+
+        function toggleTimer() {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerRunning = false;
+                document.getElementById('timerStartBtn').textContent = 'Start';
+            } else {
+                timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
+                timerRunning = true;
+                document.getElementById('timerStartBtn').textContent = 'Pause';
+            }
+        }
+
+        function resetTimer() {
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            timerSeconds = 0;
+            timerRunning = false;
+            updateTimerDisplay();
+            document.getElementById('timerStartBtn').textContent = 'Start';
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(timerSeconds / 3600);
+            const minutes = Math.floor((timerSeconds % 3600) / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // =====================
+        // RESOURCES
+        // =====================
+        function renderResources() {
+            const container = document.getElementById('resources-list');
+            const filter = state.currentResourceFilter || 'all';
+
+            let resources = [...state.resources];
+            if (filter !== 'all') resources = resources.filter(r => r.skill === filter);
+
+            const grouped = {};
+            resources.forEach(r => {
+                if (!grouped[r.skill]) grouped[r.skill] = [];
+                grouped[r.skill].push(r);
+            });
+
+            if (Object.keys(grouped).length === 0) {
+                container.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path></svg><p>No resources found</p></div>';
+                return;
+            }
+
+            container.innerHTML = Object.entries(grouped).map(([skill, items]) => `
+                <div class="resource-group">
+                    <div class="resource-group-title">
+                        <span class="badge badge-${skill.toLowerCase().replace(' ', '.')}">${skill}</span>
+                        (${items.length} resources)
+                    </div>
+                    ${items.map(r => `
+                        <div class="resource-item">
+                            <div class="resource-info">
+                                <div class="resource-name">${r.name} <span class="badge badge-${r.difficulty.toLowerCase()}">${r.difficulty}</span></div>
+                                <div class="resource-notes">${r.notes || ''}</div>
+                            </div>
+                            <a href="${r.url}" target="_blank" class="resource-link">Open</a>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function filterResources(filter, btn) {
+            state.currentResourceFilter = filter;
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            renderResources();
+        }
+
+        function toggleAddResourceForm() {
+            document.getElementById('addResourceForm').classList.toggle('active');
+        }
+
+        function addResource() {
+            const name = document.getElementById('newResourceName').value.trim();
+            const url = document.getElementById('newResourceUrl').value.trim();
+            if (!name || !url) return alert('Please enter name and URL');
+
+            state.resources.push({
+                id: Date.now(),
+                name: name,
+                skill: document.getElementById('newResourceSkill').value,
+                difficulty: document.getElementById('newResourceDifficulty').value,
+                url: url,
+                notes: document.getElementById('newResourceNotes').value.trim()
+            });
+
+            saveState();
+            renderResources();
+            toggleAddResourceForm();
+            document.getElementById('newResourceName').value = '';
+            document.getElementById('newResourceUrl').value = '';
+            document.getElementById('newResourceNotes').value = '';
+        }
+
+        // =====================
+        // ANALYTICS
+        // =====================
+        function renderAnalytics() {
+            const skills = ['Listening', 'Reading', 'Writing', 'Speaking'];
+
+            skills.forEach(skill => {
+                const skillTasks = state.tasks.filter(t => t.skill === skill);
+                const completed = skillTasks.filter(t => t.status === 'Done').length;
+                const total = skillTasks.length;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+                document.getElementById(`analytics-${skill.toLowerCase()}`).textContent = percentage + '%';
+            });
+
+            const barsContainer = document.getElementById('analytics-skill-bars');
+            barsContainer.innerHTML = skills.map(skill => {
+                const skillTasks = state.tasks.filter(t => t.skill === skill);
+                const completed = skillTasks.filter(t => t.status === 'Done').length;
+                const inProgress = skillTasks.filter(t => t.status === 'In Progress').length;
+                const notStarted = skillTasks.filter(t => t.status === 'Not Started').length;
+                const total = skillTasks.length;
+
+                return `
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-label">${skill}</span>
+                            <span class="progress-value">${completed} done, ${inProgress} active, ${notStarted} pending</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${skill.toLowerCase()}" style="width: ${total > 0 ? (completed / total) * 100 : 0}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const statsContainer = document.getElementById('analytics-stats');
+            const totalTime = state.tasks.reduce((sum, t) => sum + (t.time_spent || 0), 0);
+            const avgTime = state.tasks.length > 0 ? Math.round(totalTime / state.tasks.length) : 0;
+            const hardCompleted = state.tasks.filter(t => t.difficulty === 'Hard' && t.status === 'Done').length;
+            const totalHard = state.tasks.filter(t => t.difficulty === 'Hard').length;
+
+            statsContainer.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                    <div style="padding: 16px; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${Math.round(totalTime)} min</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Total Study Time</div>
+                    </div>
+                    <div style="padding: 16px; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${avgTime} min</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Avg Time per Task</div>
+                    </div>
+                    <div style="padding: 16px; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-red);">${hardCompleted}/${totalHard}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Hard Tasks Done</div>
+                    </div>
+                    <div style="padding: 16px; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-orange);">${calculateStreak()}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Current Streak</div>
+                    </div>
+                </div>
+            `;
+
+            renderActivityChart('analytics-chart');
+        }
+
+        // =====================
+        // NAVIGATION
+        // =====================
+        function switchPanel(panelName) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.quick-nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(`panel-${panelName}`).classList.add('active');
+            document.querySelector(`.quick-nav-item[data-panel="${panelName}"]`).classList.add('active');
+
+            if (window.innerWidth <= 768) toggleSidebar();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            const main = document.getElementById('main');
+
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+
+            if (window.innerWidth > 768) {
+                sidebar.classList.toggle('collapsed');
+                main.classList.toggle('expanded');
+            }
+        }
+
+        // =====================
+        // EXPORT / IMPORT / RESET
+        // =====================
+        function exportData() {
+            const dataStr = JSON.stringify(state, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `celpip-progress-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.tasks && imported.resources) {
+                        state = imported;
+                        saveState();
+                        renderAll();
+                        alert('Data imported successfully!');
+                    } else {
+                        alert('Invalid file format');
+                    }
+                } catch (err) {
+                    alert('Error reading file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function showResetModal() {
+            document.getElementById('resetModal').classList.add('active');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.remove('active');
+        }
+
+        function resetAllData() {
+            localStorage.removeItem('celpipDashboard');
+            state = JSON.parse(JSON.stringify(defaultData));
+            saveState();
+            renderAll();
+            closeResetModal();
+            alert('All data has been reset!');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
