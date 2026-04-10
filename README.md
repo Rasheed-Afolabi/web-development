@@ -10,3 +10,4 @@ A collection of web application projects built with various frameworks.
 | `application-tracker/` | Job application tracker with daily targets and analytics | HTML/JS |
 | `django-pizzeria/` | Pizzeria web application | Python/Django |
 | `django-project/` | Django learning log web application | Python/Django |
+| `celpip-study-dashboard/` | CELPIP exam study planner with task tracking, timer, and analytics | HTML/JS |
