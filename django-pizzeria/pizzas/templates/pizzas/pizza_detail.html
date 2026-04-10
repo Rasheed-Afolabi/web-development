@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html><head><title>{{ pizza.pizza_name }}</title></head>
+<body>
+<h1>{{ pizza.pizza_name }}</h1>
+{% if pizza.pizza_image %}<img src="{{ pizza.pizza_image.url }}" width="300">{% endif %}
+<h3>Toppings:</h3><ul>
+{% for topping in pizza.toppings.all %}<li>{{ topping.topping_name }}</li>{% endfor %}
+</ul>
+<h3>Comments:</h3><ul>
+{% for comment in pizza.comments.all %}
+<li><strong>{{ comment.name }}</strong>: {{ comment.comment }}</li>
+{% endfor %}</ul>
+<h4>Add a Comment:</h4>
+<form method="POST">{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Post Comment">
+</form>
+<a href="/pizzas/">Back to menu</a>
+</body></html>

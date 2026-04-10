@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Application Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --navy-dark: #0a1628;
+            --navy: #0f2044;
+            --navy-light: #1a3a6e;
+            --navy-lighter: #254a80;
+            --white: #ffffff;
+            --white-90: rgba(255, 255, 255, 0.9);
+            --white-70: rgba(255, 255, 255, 0.7);
+            --white-50: rgba(255, 255, 255, 0.5);
+            --white-20: rgba(255, 255, 255, 0.2);
+            --white-10: rgba(255, 255, 255, 0.1);
+            --yellow: #fbbf24;
+            --yellow-light: #fcd34d;
+            --yellow-dark: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, var(--navy-dark) 100%);
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .wrap {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        /* ===== Backlog Warning Banner ===== */
+        .backlog-banner {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(251, 191, 36, 0.15) 100%);
+            border: 2px solid var(--yellow);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .backlog-banner.show {
+            display: flex;
+        }
+
+        @keyframes glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+            }
+        }
+
+        .backlog-banner .icon {
+            font-size: 28px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .backlog-banner .content {
+            flex: 1;
+        }
+
+        .backlog-banner .title {
+            font-weight: 700;
+            color: var(--yellow);
+            font-size: 16px;
+        }
+
+        .backlog-banner .subtitle {
+            color: var(--white-70);
+            font-size: 13px;
+        }
+
+        .backlog-banner .action {
+            background: var(--yellow);
+            color: var(--navy-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .backlog-banner .action:hover {
+            background: var(--yellow-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+        }
+
+        /* ===== Hero Header ===== */
+        .hero {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy) 100%);
+            border: 1px solid var(--white-20);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 32px;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-left h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hero-left h1 .emoji {
+            font-size: 32px;
+        }
+
+        .hero-left .sub {
+            color: var(--white-70);
+            font-size: 14px;
+        }
+
+        .hero-left .sub strong {
+            color: var(--yellow);
+        }
+
+        .hero-center {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .progress-ring-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: var(--white-20);
+            stroke-width: 10;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: var(--yellow);
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease, stroke 0.3s ease;
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+        }
+
+        .progress-ring-fill.success {
+            stroke: var(--green);
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+        }
+
+        .progress-ring-fill.danger {
+            stroke: var(--red);
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
+        }
+
+        .progress-ring-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-ring-text .number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .progress-ring-text .label {
+            font-size: 10px;
+            color: var(--white-70);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .daily-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .daily-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--white-90);
+        }
+
+        .daily-stat .icon {
+            font-size: 18px;
+        }
+
+        .daily-stat .value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--yellow);
+        }
+
+        .daily-stat .value.backlog {
+            color: var(--red);
+        }
+
+        .daily-stat .value.streak {
+            color: var(--yellow-light);
+        }
+
+        .hero-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ===== Buttons ===== */
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+            font-size: 14px;
+            border: 1px solid var(--white-20);
+            background: var(--navy-light);
+            color: var(--white);
+            padding: 10px 16px;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            border-color: var(--yellow);
+            cursor: pointer;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--white-50);
+        }
+
+        .btn {
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn.primary {
+            background: var(--yellow);
+            color: var(--navy-dark);
+            border-color: var(--yellow);
+            font-weight: 700;
+        }
+
+        .btn.primary:hover {
+            background: var(--yellow-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn.secondary {
+            background: var(--navy-lighter);
+            border-color: var(--white-20);
+        }
+
+        .btn.secondary:hover {
+            border-color: var(--yellow);
+            background: var(--navy-light);
+        }
+
+        .btn.ghost {
+            background: transparent;
+            border-color: var(--white-20);
+        }
+
+        .btn.ghost:hover {
+            border-color: var(--white-50);
+            background: var(--white-10);
+        }
+
+        .btn.danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .btn.danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: var(--red);
+        }
+
+        /* ===== Tabs ===== */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 20px;
+            background: var(--navy);
+            padding: 6px;
+            border-radius: var(--radius);
+            border: 1px solid var(--white-10);
+            width: fit-content;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--white-70);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--white);
+            background: var(--white-10);
+        }
+
+        .tab.active {
+            color: var(--navy-dark);
+            background: var(--yellow);
+        }
+
+        /* ===== Sections ===== */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ===== Cards & KPIs ===== */
+        .card {
+            background: var(--navy);
+            border: 1px solid var(--white-10);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .kpis .card {
+            text-align: center;
+            padding: 20px 14px;
+            transition: all 0.2s;
+            border: 1px solid var(--white-10);
+        }
+
+        .kpis .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--yellow);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .kpis .hint {
+            font-size: 11px;
+            color: var(--white-50);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .kpis .val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--yellow);
+        }
+
+        .kpis .val.good {
+            color: var(--green);
+        }
+
+        .kpis .val.bad {
+            color: var(--red);
+        }
+
+        /* ===== Apps Layout ===== */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpis {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .hero-center {
+                justify-content: center;
+            }
+
+            .hero-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel {
+            background: var(--navy);
+            border: 1px solid var(--white-10);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+        }
+
+        .panel h4 {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-box {
+            background: var(--navy-dark);
+            border: 1px solid var(--white-10);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .chart-box h5 {
+            margin: 0 0 10px;
+            font-size: 12px;
+            color: var(--white-50);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Toolbar ===== */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .toolbar input[type="text"],
+        .toolbar input[type="search"] {
+            flex: 1;
+            min-width: 260px;
+            background: var(--navy);
+        }
+
+        /* ===== Table ===== */
+        .table-wrap {
+            overflow: auto;
+            border: 1px solid var(--white-10);
+            border-radius: var(--radius);
+            background: var(--navy);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 900px;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background: var(--navy-light);
+            border-bottom: 2px solid var(--yellow);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        thead th.sortable {
+            cursor: pointer;
+            padding-right: 24px;
+            position: relative;
+        }
+
+        thead th.sortable::after {
+            content: '↕';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--white-50);
+            font-size: 10px;
+        }
+
+        thead th.sortable.asc::after {
+            content: '▲';
+            color: var(--yellow);
+        }
+
+        thead th.sortable.desc::after {
+            content: '▼';
+            color: var(--yellow);
+        }
+
+        tbody tr {
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: var(--white-10);
+        }
+
+        tbody td {
+            border-bottom: 1px solid var(--white-10);
+            padding: 14px 16px;
+            vertical-align: middle;
+            color: var(--white-90);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody td strong {
+            color: var(--white);
+        }
+
+        /* ===== Quick Chips ===== */
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chips.quick {
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            cursor: pointer;
+            background: var(--navy);
+            border: 1px solid var(--white-20);
+            color: var(--white-70);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--yellow);
+            color: var(--white);
+        }
+
+        .chip .cnt {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: var(--white-10);
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .chip.active {
+            border-color: var(--yellow);
+            background: var(--yellow);
+            color: var(--navy-dark);
+        }
+
+        .chip.active .cnt {
+            background: var(--navy-dark);
+            color: var(--yellow);
+        }
+
+        /* ===== Badge & Status Dropdown ===== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--white-20);
+            background: var(--navy-light);
+            color: var(--white-90);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .badge::after {
+            content: '▼';
+            font-size: 8px;
+            opacity: 0.6;
+            margin-left: 4px;
+        }
+
+        .badge:hover {
+            border-color: var(--yellow);
+            background: var(--navy-lighter);
+        }
+
+        .status-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: var(--navy);
+            border: 2px solid var(--yellow);
+            border-radius: 12px;
+            z-index: 1000;
+            min-width: 180px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            display: none;
+            overflow: hidden;
+        }
+
+        .status-dropdown.show {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--white-10);
+            color: var(--white-90);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        .status-option:hover {
+            background: var(--navy-light);
+            color: var(--yellow);
+        }
+
+        .status-option.current {
+            background: var(--yellow);
+            color: var(--navy-dark);
+            font-weight: 700;
+        }
+
+        /* ===== Resume Link Display ===== */
+        .resume-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: var(--navy-light);
+            border: 1px solid var(--white-20);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--yellow);
+            text-decoration: none;
+            max-width: 160px;
+            overflow: hidden;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .resume-link:hover {
+            border-color: var(--yellow);
+            background: var(--navy-lighter);
+            text-decoration: none;
+        }
+
+        .resume-link .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ===== Icons ===== */
+        .ico {
+            cursor: pointer;
+            font-size: 16px;
+            vertical-align: middle;
+            user-select: none;
+            transition: all 0.15s;
+            margin: 0 4px;
+            opacity: 0.7;
+        }
+
+        .ico:hover {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        /* ===== Modal ===== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 22, 40, 0.9);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .sheet {
+            width: min(900px, 96vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: var(--navy);
+            border: 2px solid var(--yellow);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .sheet h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+
+        .field {
+            grid-column: span 12;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .field.h6 {
+            grid-column: span 6;
+        }
+
+        .field.h4 {
+            grid-column: span 4;
+        }
+
+        .field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--white-70);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--white-10);
+        }
+
+        /* ===== Autocomplete ===== */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--navy);
+            border: 2px solid var(--yellow);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--white-10);
+            color: var(--white-90);
+            transition: all 0.15s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--navy-light);
+            color: var(--yellow);
+        }
+
+        .autocomplete-item .icon {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .autocomplete-item .text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .autocomplete-item .subtext {
+            font-size: 10px;
+            color: var(--white-50);
+            display: block;
+        }
+
+        .autocomplete-item .count {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--yellow);
+            background: var(--navy-dark);
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+
+        /* ===== Analytics ===== */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .bigchart {
+            background: var(--navy);
+            border: 1px solid var(--white-10);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .bigchart h4 {
+            margin: 0 0 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        /* ===== Settings ===== */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--white-10);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: var(--white-50);
+            margin-top: 4px;
+        }
+
+        .setting-input {
+            width: 90px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            background: var(--navy-dark);
+        }
+
+        /* ===== Daily Target Box ===== */
+        .daily-target-box {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border: 1px solid var(--white-20);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 16px;
+        }
+
+        .daily-target-box.has-backlog {
+            border-color: var(--yellow);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+        }
+
+        .daily-target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .daily-target-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--white);
+        }
+
+        .daily-target-remaining {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--white-70);
+            font-weight: 600;
+        }
+
+        .daily-target-remaining.urgent {
+            color: var(--yellow);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--white-10);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            display: flex;
+        }
+
+        .progress-bar-backlog {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+            transition: width 0.4s ease;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar-today {
+            height: 100%;
+            background: linear-gradient(90deg, var(--yellow-dark), var(--yellow-light));
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .progress-bar-today.success {
+            background: linear-gradient(90deg, #059669, var(--green));
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .daily-target-breakdown {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--white-70);
+        }
+
+        .daily-target-breakdown span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .daily-target-breakdown .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .daily-target-breakdown .dot.today {
+            background: var(--yellow);
+        }
+
+        .daily-target-breakdown .dot.backlog {
+            background: #ef4444;
+        }
+
+        .daily-target-breakdown .dot.target {
+            background: var(--white-50);
+        }
+
+        .daily-target-breakdown strong {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--white);
+        }
+
+        /* ===== Misc ===== */
+        .sep {
+            border: none;
+            border-top: 1px solid var(--white-10);
+            margin: 16px 0;
+        }
+
+        a {
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--white-50);
+        }
+
+        .tooltip {
+            position: fixed;
+            z-index: 50;
+            transform: translate(-50%, -120%);
+            background: var(--navy);
+            border: 1px solid var(--yellow);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: var(--white);
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== Empty State ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--white-50);
+        }
+
+        .empty-state .emoji {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state .title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--white-70);
+            margin-bottom: 8px;
+        }
+
+        .empty-state .desc {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <!-- Backlog Warning Banner -->
+        <div class="backlog-banner" id="backlogBanner">
+            <span class="icon">⚡</span>
+            <div class="content">
+                <div class="title">You have <span id="backlogAmount">-</span> applications in your backlog!</div>
+                <div class="subtitle">Complete your effective target today to get back on track.</div>
+            </div>
+            <button class="action" onclick="scrollToAddApp()">+ Add Application</button>
+        </div>
+
+        <!-- Hero Header -->
+        <div class="hero">
+            <div class="hero-left">
+                <h1><span class="emoji">🎯</span> Application Tracker</h1>
+                <div class="sub">Daily target: <strong id="heroTarget">-</strong> applications • Track your momentum
+                </div>
+            </div>
+
+            <div class="hero-center">
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" width="110" height="110">
+                        <circle class="progress-ring-bg" cx="55" cy="55" r="45" />
+                        <circle class="progress-ring-fill" id="heroRingFill" cx="55" cy="55" r="45"
+                            stroke-dasharray="0 283" />
+                    </svg>
+                    <div class="progress-ring-text">
+                        <div class="number" id="heroProgress">-</div>
+                        <div class="label">Today</div>
+                    </div>
+                </div>
+
+                <div class="daily-stats">
+                    <div class="daily-stat">
+                        <span class="icon">🎯</span>
+                        <span>Daily Target:</span>
+                        <span class="value" id="heroDailyTarget">-</span>
+                    </div>
+                    <div class="daily-stat">
+                        <span class="icon">📋</span>
+                        <span>Backlog:</span>
+                        <span class="value backlog" id="heroBacklog">-</span>
+                    </div>
+                    <div class="daily-stat">
+                        <span class="icon">🔥</span>
+                        <span>Streak:</span>
+                        <span class="value streak" id="heroStreak">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <button class="btn secondary" id="exportJsonBtn">📤 Export</button>
+                <button class="btn ghost" id="importBtn">📥 Import</button>
+                <input id="importFile" type="file" accept="application/json" style="display:none" />
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="apps">📋 Applications</button>
+            <button class="tab" data-tab="analytics">📊 Analytics</button>
+            <button class="tab" data-tab="settings">⚙️ Settings</button>
+        </div>
+
+        <!-- Applications Section -->
+        <section class="section active" id="apps">
+            <!-- Daily Target Progress Box -->
+            <div class="daily-target-box" id="dailyTargetBox">
+                <div class="daily-target-header">
+                    <span class="daily-target-title">📈 Today's Progress</span>
+                    <span class="daily-target-remaining" id="dailyRemaining">-</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-backlog" id="dailyProgressBacklog" style="width: 0%"></div>
+                    <div class="progress-bar-today" id="dailyProgressToday" style="width: 0%"></div>
+                </div>
+                <div class="daily-target-breakdown">
+                    <span><span class="dot today"></span> Done Today: <strong id="dailyDone">-</strong></span>
+                    <span><span class="dot backlog"></span> Backlog: <strong id="dailyBacklog">-</strong></span>
+                    <span><span class="dot target"></span> Daily Target: <strong id="dailyTarget">-</strong></span>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <button class="btn primary" id="openAdd">+ Add Application</button>
+                <input id="searchInput" type="search" placeholder="Search company, position, notes…" />
+                <select id="statusFilter" title="Filter by status">
+                    <option value="all">All Statuses</option>
+                    <option>Draft</option>
+                    <option>Applied</option>
+                    <option>Recruiter Contact</option>
+                    <option>Phone Screen</option>
+                    <option>Technical Interview</option>
+                    <option>Onsite Interview</option>
+                    <option>Final Interview</option>
+                    <option>Offer</option>
+                    <option>Rejected</option>
+                    <option>Ghosted</option>
+                    <option>Withdrawn</option>
+                </select>
+                <span class="small" id="lastSaved"></span>
+            </div>
+
+            <!-- Quick Status Chips -->
+            <div id="quickStatus" class="chips quick"></div>
+
+            <!-- KPIs -->
+            <div class="kpis">
+                <div class="card">
+                    <div class="hint">Total Apps</div>
+                    <div class="val" id="kpiTotal">-</div>
+                </div>
+                <div class="card">
+                    <div class="hint">This Week</div>
+                    <div class="val" id="kpiWeek">-</div>
+                </div>
+                <div class="card">
+                    <div class="hint">In Progress</div>
+                    <div class="val" id="kpiInProgress">-</div>
+                </div>
+                <div class="card">
+                    <div class="hint">Offer Rate</div>
+                    <div class="val" id="kpiOfferRate">-</div>
+                </div>
+                <div class="card">
+                    <div class="hint">Streak</div>
+                    <div class="val" id="kpiStreak">-</div>
+                </div>
+            </div>
+
+            <!-- Apps Grid -->
+            <div class="apps-grid">
+                <!-- Main Table -->
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-col="company">Company</th>
+                                <th class="sortable" data-col="position">Position</th>
+                                <th class="sortable" data-col="status">Status</th>
+                                <th class="sortable" data-col="dateTimeApplied">Applied</th>
+                                <th>Resume</th>
+                                <th>Job URL</th>
+                                <th>Notes</th>
+                                <th style="width:90px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Side Panels -->
+                <div class="side">
+                    <div class="panel">
+                        <h4>📊 Daily Tracking</h4>
+                        <div class="chart-box">
+                            <h5>Last 14 Days</h5>
+                            <svg id="dailyBars" viewBox="0 0 360 180"></svg>
+                        </div>
+                        <div class="chart-box" style="margin-top: 14px">
+                            <h5>Trend (3-Day Average)</h5>
+                            <svg id="dailyTrend" viewBox="0 0 360 180"></svg>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h4>📅 Weekly Progress</h4>
+                        <div id="weekSummary" class="small"
+                            style="background: var(--navy-dark); padding: 12px; border-radius: 10px; margin-bottom: 14px; text-align: center; font-weight: 600;">
+                        </div>
+                        <div class="chart-box">
+                            <h5>This Week (Cumulative)</h5>
+                            <svg id="weekLine" viewBox="0 0 360 120"></svg>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <h4>📈 Status Overview</h4>
+                        <div class="chart-box">
+                            <svg id="statusDonut" viewBox="0 0 220 220"></svg>
+                        </div>
+                        <div class="chart-box" style="margin-top: 14px">
+                            <h5>Pipeline Funnel</h5>
+                            <svg id="funnel" viewBox="0 0 280 160"></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section class="section" id="analytics">
+            <div class="analytics-grid">
+                <div class="bigchart">
+                    <h4>📈 Last 7 Days</h4>
+                    <svg id="weeklyBars" viewBox="0 0 700 190"></svg>
+                </div>
+                <div class="bigchart" style="text-align: center">
+                    <h4>Weekly Goal</h4>
+                    <svg viewBox="0 0 140 140" style="width: 140px; margin: 12px auto">
+                        <circle cx="70" cy="70" r="50" fill="none" stroke="var(--white-20)" stroke-width="12" />
+                        <circle id="weeklyArc" cx="70" cy="70" r="50" fill="none" stroke="var(--yellow)"
+                            stroke-width="12" stroke-dasharray="0 314" transform="rotate(-90 70 70)"
+                            stroke-linecap="round" />
+                        <text id="weeklyPct" x="70" y="75" text-anchor="middle" fill="var(--white)" font-size="20"
+                            font-weight="700">-%</text>
+                    </svg>
+                    <div class="small" id="weeklyGoalText" style="font-weight: 600;">- / - this week</div>
+                </div>
+            </div>
+            <div class="card">
+                <h4 style="margin: 0 0 16px; font-weight: 700;">📉 Daily Activity (Last 30 Days)</h4>
+                <svg id="monthLine" viewBox="0 0 700 120"></svg>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section class="section" id="settings">
+            <div class="settings-grid">
+                <div class="card">
+                    <h4 style="margin: 0 0 16px; font-weight: 700;">🎯 Target Settings</h4>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Daily Target</div>
+                            <div class="setting-desc">Applications to submit each day</div>
+                        </div>
+                        <input type="number" class="setting-input" id="settingDailyTarget" value="30" min="1"
+                            max="100" />
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Weekly Goal</div>
+                            <div class="setting-desc">Total applications per week</div>
+                        </div>
+                        <input type="number" class="setting-input" id="settingWeeklyGoal" value="100" min="1"
+                            max="500" />
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Backlog Tracking</div>
+                            <div class="setting-desc">Carry unfulfilled targets forward</div>
+                        </div>
+                        <input type="checkbox" id="settingBacklogEnabled" checked
+                            style="width: 22px; height: 22px; accent-color: var(--yellow);" />
+                    </div>
+                    <div class="actions" style="border-top: none; padding-top: 0; margin-top: 10px;">
+                        <button class="btn primary" id="saveSettings">💾 Save Settings</button>
+                        <button class="btn ghost" id="clearBacklog">🧹 Clear Backlog</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin: 0 0 16px; font-weight: 700;">📄 Saved Resumes</h4>
+                    <div id="savedResumes" style="max-height: 200px; overflow-y: auto;"></div>
+                    <hr class="sep" />
+                    <button class="btn ghost" id="clearResumes" style="width: 100%;">🗑️ Clear All Saved
+                        Resumes</button>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin: 0 0 16px; font-weight: 700;">💾 Data Management</h4>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Export JSON</div>
+                            <div class="setting-desc">Download all data</div>
+                        </div>
+                        <button class="btn secondary" id="exportJsonBtn2">📤 Export</button>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Export CSV</div>
+                            <div class="setting-desc">Download as spreadsheet</div>
+                        </div>
+                        <button class="btn secondary" id="exportCsvBtn">📊 CSV</button>
+                    </div>
+                    <hr class="sep" />
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Clear Suggestions</div>
+                            <div class="setting-desc">Remove autocomplete history</div>
+                        </div>
+                        <button class="btn ghost" id="clearSuggestionsBtn">🧹 Clear</button>
+                    </div>
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label">Reset Everything</div>
+                            <div class="setting-desc">Delete all data permanently</div>
+                        </div>
+                        <button class="btn danger" id="resetBtn">🗑️ Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="modal">
+        <div class="sheet">
+            <h3 id="modalTitle">➕ Add Application</h3>
+            <div class="grid">
+                <div class="field h6">
+                    <label>Company *</label>
+                    <div class="autocomplete-wrapper">
+                        <input id="m_company" autocomplete="off" placeholder="e.g., Google, Microsoft..." />
+                        <div id="ac_company" class="autocomplete-dropdown"></div>
+                    </div>
+                </div>
+                <div class="field h6">
+                    <label>Position *</label>
+                    <div class="autocomplete-wrapper">
+                        <input id="m_position" autocomplete="off" placeholder="e.g., IT Support Specialist..." />
+                        <div id="ac_position" class="autocomplete-dropdown"></div>
+                    </div>
+                </div>
+                <div class="field h4">
+                    <label>Status *</label>
+                    <select id="m_status">
+                        <option>Draft</option>
+                        <option selected>Applied</option>
+                        <option>Recruiter Contact</option>
+                        <option>Phone Screen</option>
+                        <option>Technical Interview</option>
+                        <option>Onsite Interview</option>
+                        <option>Final Interview</option>
+                        <option>Offer</option>
+                        <option>Rejected</option>
+                        <option>Ghosted</option>
+                        <option>Withdrawn</option>
+                    </select>
+                </div>
+                <div class="field h4">
+                    <label>Date & Time</label>
+                    <input id="m_applied" type="datetime-local" />
+                </div>
+                <div class="field h4"></div>
+
+                <div class="field h6">
+                    <label>Resume Link *</label>
+                    <div class="autocomplete-wrapper">
+                        <input id="m_resume" placeholder="https://drive.google.com/..." autocomplete="off" />
+                        <div id="ac_resume" class="autocomplete-dropdown"></div>
+                    </div>
+                </div>
+                <div class="field h6">
+                    <label>Resume Name</label>
+                    <input id="m_resumeName" placeholder="e.g., IT Support Resume v2" />
+                </div>
+
+                <div class="field">
+                    <label>Job URL</label>
+                    <div class="autocomplete-wrapper">
+                        <input id="m_url" placeholder="https://careers.company.com/..." autocomplete="off" />
+                        <div id="ac_url" class="autocomplete-dropdown"></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Notes</label>
+                    <textarea id="m_notes" rows="2" placeholder="Salary, recruiter, requirements..."></textarea>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn primary" id="saveBtn" type="button">💾 Save Application</button>
+                <button class="btn ghost" id="cancelBtn" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="barTooltip" class="tooltip"></div>
+
+    <script>
+        /* ===== Configuration ===== */
+        const NS = 'appTracker_v3_';
+        const KEYS = {
+            applications: NS + 'applications',
+            suggestions: NS + 'suggestions',
+            settings: NS + 'settings',
+            trackingStartDate: NS + 'trackingStartDate',
+            appSort: NS + 'appSort'
+        };
+
+        const ALL_STATUSES = ['Draft', 'Applied', 'Recruiter Contact', 'Phone Screen', 'Technical Interview', 'Onsite Interview', 'Final Interview', 'Offer', 'Rejected', 'Ghosted', 'Withdrawn'];
+
+        const $ = s => document.querySelector(s);
+        const $$ = s => Array.from(document.querySelectorAll(s));
+
+        /* ===== Helpers ===== */
+        const tzStamp = () => new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+
+        // Get today's date key in Central Time (resets at midnight CT)
+        const todayKey = () => {
+            const now = new Date();
+            const centralTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+            const year = centralTime.getFullYear();
+            const month = String(centralTime.getMonth() + 1).padStart(2, '0');
+            const day = String(centralTime.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        const signature = a => [String(a.company || '').trim().toLowerCase(), String(a.position || '').trim().toLowerCase(), String(a.resumeLink || '').trim(), String(a.dateTimeApplied || '').trim()].join('|');
+        const dedupe = arr => { const seen = new Set(), out = []; for (const a of arr) { const s = signature(a); if (!seen.has(s)) { seen.add(s); out.push(a); } } return out; };
+
+        const sanitize = a => ({
+            company: String(a.company || '').trim(),
+            position: String(a.position || '').trim(),
+            resumeLink: String(a.resumeLink || '').trim(),
+            resumeName: String(a.resumeName || '').trim(),
+            status: a.status || 'Applied',
+            dateTimeApplied: String(a.dateTimeApplied || ''),
+            careerUrl: String(a.careerUrl || ''),
+            notes: String(a.notes || ''),
+            addedDate: a.addedDate || new Date().toISOString()
+        });
+
+        const fmtShort = d => {
+            const dt = new Date(d);
+            return isNaN(+dt) ? '' : (dt.getMonth() + 1) + '/' + dt.getDate();
+        };
+
+        /* ===== Data Loading ===== */
+        let applications = [];
+        let suggestions = { company: {}, position: {}, resumeLink: {}, careerUrl: {} };
+        let settings = { dailyTarget: 30, weeklyGoal: 100, backlogEnabled: true };
+        let trackingStartDate = todayKey(); // Start from TODAY
+        let appSort = { column: '', asc: true };
+
+        function loadData() {
+            try { applications = JSON.parse(localStorage.getItem(KEYS.applications) || '[]'); } catch { applications = []; }
+            try { suggestions = { ...suggestions, ...JSON.parse(localStorage.getItem(KEYS.suggestions) || '{}') }; } catch { }
+            try { settings = { ...settings, ...JSON.parse(localStorage.getItem(KEYS.settings) || '{}') }; } catch { }
+            try { appSort = JSON.parse(localStorage.getItem(KEYS.appSort) || '{}'); } catch { appSort = { column: '', asc: true }; }
+
+            // Get or set tracking start date (starts TODAY if not set)
+            const storedStart = localStorage.getItem(KEYS.trackingStartDate);
+            if (storedStart) {
+                trackingStartDate = storedStart;
+            } else {
+                trackingStartDate = todayKey();
+                localStorage.setItem(KEYS.trackingStartDate, trackingStartDate);
+            }
+
+            applications = dedupe(applications.map(sanitize));
+            localStorage.setItem(KEYS.applications, JSON.stringify(applications));
+        }
+
+        loadData();
+
+        /* ===== Settings UI ===== */
+        function syncSettingsUI() {
+            $('#settingDailyTarget').value = settings.dailyTarget;
+            $('#settingWeeklyGoal').value = settings.weeklyGoal;
+            $('#settingBacklogEnabled').checked = settings.backlogEnabled;
+            $('#heroTarget').textContent = settings.dailyTarget;
+            $('#heroDailyTarget').textContent = settings.dailyTarget;
+        }
+
+        syncSettingsUI();
+
+        $('#saveSettings').addEventListener('click', () => {
+            settings.dailyTarget = parseInt($('#settingDailyTarget').value) || 30;
+            settings.weeklyGoal = parseInt($('#settingWeeklyGoal').value) || 100;
+            settings.backlogEnabled = $('#settingBacklogEnabled').checked;
+            localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+            syncSettingsUI();
+            updateDailyTracking();
+            renderAll();
+            alert('Settings saved!');
+        });
+
+        $('#clearBacklog').addEventListener('click', () => {
+            if (confirm('Clear backlog? This resets tracking to start from today.')) {
+                trackingStartDate = todayKey();
+                localStorage.setItem(KEYS.trackingStartDate, trackingStartDate);
+                updateDailyTracking();
+                renderAll();
+                alert('Backlog cleared! Tracking starts fresh from today.');
+            }
+        });
+
+        /* ===== Daily Tracking & Backlog (FIXED - starts from tracking start date) ===== */
+        function getApplicationsForDate(dateKey) {
+            return applications.filter(a => {
+                const appDate = new Date(a.dateTimeApplied);
+                if (isNaN(+appDate)) return false;
+                // Convert app date to Central Time for comparison
+                const centralAppDate = new Date(appDate.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+                const year = centralAppDate.getFullYear();
+                const month = String(centralAppDate.getMonth() + 1).padStart(2, '0');
+                const day = String(centralAppDate.getDate()).padStart(2, '0');
+                const appDateKey = `${year}-${month}-${day}`;
+                return appDateKey === dateKey;
+            }).length;
+        }
+
+        function calculateBacklog() {
+            if (!settings.backlogEnabled) return 0;
+
+            let backlog = 0;
+            const today = todayKey();
+            const startDate = new Date(trackingStartDate + 'T00:00:00');
+            const todayDate = new Date(today + 'T00:00:00');
+
+            // Only count days FROM tracking start date TO yesterday (not including today)
+            for (let d = new Date(startDate); d < todayDate; d.setDate(d.getDate() + 1)) {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+
+                const achieved = getApplicationsForDate(dateKey);
+                const shortfall = Math.max(0, settings.dailyTarget - achieved);
+                backlog += shortfall;
+            }
+
+            return backlog;
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            const today = todayKey();
+            const todayDate = new Date(today + 'T00:00:00');
+            const startDate = new Date(trackingStartDate + 'T00:00:00');
+
+            // Count backwards from yesterday
+            for (let i = 1; i <= 365; i++) {
+                const d = new Date(todayDate);
+                d.setDate(todayDate.getDate() - i);
+
+                // Don't count before tracking started
+                if (d < startDate) break;
+
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+
+                const achieved = getApplicationsForDate(dateKey);
+
+                if (achieved >= settings.dailyTarget) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+
+            // Check if today is on track (met daily target, not counting backlog)
+            const todayApps = getApplicationsForDate(today);
+            if (todayApps >= settings.dailyTarget) {
+                streak++;
+            }
+
+            return streak;
+        }
+
+        function updateDailyTracking() {
+            const todayApps = getApplicationsForDate(todayKey());
+            const backlog = calculateBacklog();
+            const totalNeeded = settings.dailyTarget + backlog;
+            const remaining = Math.max(0, totalNeeded - todayApps);
+            const streak = calculateStreak();
+
+            // Hero section
+            $('#heroProgress').textContent = todayApps;
+            $('#heroDailyTarget').textContent = settings.dailyTarget;
+            $('#heroBacklog').textContent = backlog;
+            $('#heroBacklog').style.color = backlog > 0 ? 'var(--red)' : 'var(--green)';
+            $('#heroStreak').textContent = streak + ' day' + (streak !== 1 ? 's' : '');
+
+            // Progress ring - based on total needed (daily + backlog)
+            const ring = $('#heroRingFill');
+            const circumference = 2 * Math.PI * 45;
+            const progress = totalNeeded > 0 ? Math.min(100, (todayApps / totalNeeded) * 100) : 0;
+            const dashArray = (progress / 100) * circumference;
+            ring.setAttribute('stroke-dasharray', `${dashArray} ${circumference - dashArray}`);
+            ring.classList.remove('success', 'danger');
+            if (todayApps >= totalNeeded) ring.classList.add('success');
+            else if (progress < 30 && totalNeeded > 0) ring.classList.add('danger');
+
+            // Daily target box
+            const box = $('#dailyTargetBox');
+            box.classList.toggle('has-backlog', backlog > 0);
+
+            $('#dailyDone').textContent = todayApps;
+            $('#dailyBacklog').textContent = backlog;
+            $('#dailyTarget').textContent = settings.dailyTarget;
+
+            // Calculate remaining text
+            if (todayApps >= totalNeeded) {
+                $('#dailyRemaining').textContent = '✓ Target complete!';
+                $('#dailyRemaining').classList.remove('urgent');
+            } else {
+                $('#dailyRemaining').textContent = remaining + ' more to go';
+                $('#dailyRemaining').classList.toggle('urgent', remaining > 0);
+            }
+
+            // Split progress bar: backlog portion (red) + today portion (yellow)
+            const backlogBar = $('#dailyProgressBacklog');
+            const todayBar = $('#dailyProgressToday');
+
+            if (totalNeeded > 0) {
+                // Calculate how much of the bar each segment takes
+                const backlogPercent = (backlog / totalNeeded) * 100;
+                const dailyPercent = (settings.dailyTarget / totalNeeded) * 100;
+
+                // How much progress has been made
+                const backlogCleared = Math.min(todayApps, backlog);
+                const todayProgress = Math.max(0, todayApps - backlog);
+
+                // Show filled portions
+                const backlogFilledPercent = backlog > 0 ? (backlogCleared / totalNeeded) * 100 : 0;
+                const todayFilledPercent = (todayProgress / totalNeeded) * 100;
+
+                backlogBar.style.width = backlogFilledPercent + '%';
+                todayBar.style.width = todayFilledPercent + '%';
+                todayBar.classList.toggle('success', todayApps >= totalNeeded);
+            } else {
+                backlogBar.style.width = '0%';
+                todayBar.style.width = '0%';
+            }
+
+            // Backlog banner
+            const banner = $('#backlogBanner');
+            if (backlog > 0) {
+                banner.classList.add('show');
+                $('#backlogAmount').textContent = backlog;
+            } else {
+                banner.classList.remove('show');
+            }
+
+            // KPI streak
+            $('#kpiStreak').textContent = streak;
+            $('#kpiStreak').classList.toggle('good', streak >= 3);
+        }
+
+        function scrollToAddApp() {
+            $('#openAdd').click();
+        }
+
+        /* ===== Quotes ===== */
+        const QUOTES = [
+            "🎯 Hit your 30 today! Small wins compound into big results.",
+            "🔥 Keep the streak alive! Consistency beats intensity.",
+            "💪 Every application is a step closer to your offer.",
+            "📈 Progress happens one submission at a time.",
+            "⚡ Clear that backlog! Future you will be grateful.",
+            "🚀 Done is better than perfect. Submit and iterate!",
+            "🎪 The job hunt is a numbers game. Keep playing!",
+            "💎 Rejections polish your approach. Keep going!",
+            "🌟 Your next opportunity is just one application away.",
+            "🏆 Champions show up every day. You've got this!"
+        ];
+
+        (function buildTicker() {
+            const track = document.createElement('div');
+            track.className = 'track';
+            track.id = 'tickerTrack';
+            const row = QUOTES.map(q => `<span class="msg"><span class="dot"></span>${q}</span>`).join('');
+            track.innerHTML = row + row;
+
+            const ticker = document.createElement('div');
+            ticker.className = 'ticker';
+            ticker.appendChild(track);
+
+            const shell = document.createElement('div');
+            shell.className = 'ticker-shell';
+            shell.appendChild(ticker);
+
+            // Insert after wrap starts
+            document.querySelector('.wrap').insertBefore(shell, document.querySelector('.backlog-banner'));
+
+            // Add ticker styles
+            const style = document.createElement('style');
+            style.textContent = `
+        .ticker-shell { position: sticky; top: 0; z-index: 20; margin-bottom: 16px; }
+        .ticker { overflow: hidden; white-space: nowrap; border: 1px solid var(--white-10); border-radius: var(--radius); background: var(--navy); padding: 12px 0; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+        .ticker .track { display: inline-block; padding-left: 100%; animation: scroll-left 90s linear infinite; }
+        .ticker:hover .track { animation-play-state: paused; }
+        .ticker .msg { display: inline-flex; gap: 10px; align-items: center; margin: 0 36px; color: var(--white-90); font-weight: 600; font-size: 14px; }
+        .ticker .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 12px var(--yellow); }
+        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+      `;
+            document.head.appendChild(style);
+        })();
+
+        /* ===== Tabs ===== */
+        $$('.tab').forEach(b => b.addEventListener('click', () => {
+            $$('.tab').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            $$('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(b.dataset.tab).classList.add('active');
+        }));
+
+        /* ===== Autocomplete ===== */
+        function saveSuggestion(field, value, extraData = {}) {
+            if (!value || !value.trim()) return;
+            const val = value.trim();
+            if (!suggestions[field]) suggestions[field] = {};
+            if (!suggestions[field][val]) {
+                suggestions[field][val] = { value: val, count: 0, lastUsed: new Date().toISOString(), ...extraData };
+            }
+            suggestions[field][val].count++;
+            suggestions[field][val].lastUsed = new Date().toISOString();
+            if (extraData.name) suggestions[field][val].name = extraData.name;
+            localStorage.setItem(KEYS.suggestions, JSON.stringify(suggestions));
+        }
+
+        function getSuggestions(field, query = '') {
+            const items = Object.values(suggestions[field] || {});
+            const q = query.toLowerCase().trim();
+
+            return items
+                .filter(item => !q || item.value.toLowerCase().includes(q) || (item.name && item.name.toLowerCase().includes(q)))
+                .sort((a, b) => (b.count - a.count) || (new Date(b.lastUsed) - new Date(a.lastUsed)))
+                .slice(0, 8);
+        }
+
+        function setupAutocomplete(inputId, dropdownId, field, options = {}) {
+            const input = $(inputId);
+            const dropdown = $(dropdownId);
+            if (!input || !dropdown) return;
+
+            let currentFocus = -1;
+
+            input.addEventListener('focus', () => showSuggestions());
+            input.addEventListener('input', () => { showSuggestions(); currentFocus = -1; });
+
+            input.addEventListener('keydown', (e) => {
+                const items = dropdown.querySelectorAll('.autocomplete-item');
+                if (e.key === 'ArrowDown') { e.preventDefault(); currentFocus++; setActive(items); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); currentFocus--; setActive(items); }
+                else if (e.key === 'Enter' && currentFocus > -1) { e.preventDefault(); if (items[currentFocus]) items[currentFocus].click(); }
+                else if (e.key === 'Escape') { dropdown.classList.remove('show'); }
+            });
+
+            function showSuggestions() {
+                const query = input.value;
+                const items = getSuggestions(field, query);
+                if (items.length === 0) { dropdown.classList.remove('show'); return; }
+
+                dropdown.innerHTML = '';
+                items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+
+                    let displayText = item.value;
+                    let subtext = '';
+                    if (field === 'resumeLink' && item.name) {
+                        displayText = item.name;
+                        subtext = item.value.length > 35 ? item.value.slice(0, 35) + '...' : item.value;
+                    }
+
+                    div.innerHTML = `
+            <span class="icon">${field === 'resumeLink' ? '📄' : '⚡'}</span>
+            <span class="text">${displayText}${subtext ? `<span class="subtext">${subtext}</span>` : ''}</span>
+            <span class="count">×${item.count}</span>
+          `;
+
+                    div.addEventListener('click', () => {
+                        input.value = item.value;
+                        if (field === 'resumeLink' && item.name && options.nameInput) {
+                            $(options.nameInput).value = item.name;
+                        }
+                        dropdown.classList.remove('show');
+                        input.focus();
+                    });
+                    dropdown.appendChild(div);
+                });
+                dropdown.classList.add('show');
+            }
+
+            function setActive(items) {
+                if (!items) return;
+                items.forEach(i => i.classList.remove('active'));
+                if (currentFocus >= items.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = items.length - 1;
+                items[currentFocus]?.classList.add('active');
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        setupAutocomplete('#m_company', '#ac_company', 'company');
+        setupAutocomplete('#m_position', '#ac_position', 'position');
+        setupAutocomplete('#m_resume', '#ac_resume', 'resumeLink', { nameInput: '#m_resumeName' });
+        setupAutocomplete('#m_url', '#ac_url', 'careerUrl');
+
+        /* ===== Modal ===== */
+        const modal = $('#modal');
+        let editingSignature = null;
+
+        const openModalForAdd = () => {
+            editingSignature = null;
+            $('#modalTitle').textContent = '➕ Add Application';
+            const dt = new Date();
+            dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+            $('#m_company').value = '';
+            $('#m_position').value = '';
+            $('#m_status').value = 'Applied';
+            $('#m_applied').value = dt.toISOString().slice(0, 16);
+            $('#m_resume').value = '';
+            $('#m_resumeName').value = '';
+            $('#m_url').value = '';
+            $('#m_notes').value = '';
+            modal.classList.add('show');
+            setTimeout(() => $('#m_company').focus(), 100);
+        };
+
+        const openModalForEdit = (app) => {
+            editingSignature = signature(app);
+            $('#modalTitle').textContent = '✏️ Edit Application';
+            $('#m_company').value = app.company || '';
+            $('#m_position').value = app.position || '';
+            $('#m_status').value = app.status || 'Applied';
+            $('#m_applied').value = app.dateTimeApplied || '';
+            $('#m_resume').value = app.resumeLink || '';
+            $('#m_resumeName').value = app.resumeName || '';
+            $('#m_url').value = app.careerUrl || '';
+            $('#m_notes').value = app.notes || '';
+            modal.classList.add('show');
+        };
+
+        const closeModal = () => {
+            modal.classList.remove('show');
+            editingSignature = null;
+            $$('.autocomplete-dropdown').forEach(d => d.classList.remove('show'));
+        };
+
+        $('#openAdd').addEventListener('click', openModalForAdd);
+        $('#cancelBtn').addEventListener('click', closeModal);
+
+        $('#saveBtn').addEventListener('click', () => {
+            const a = sanitize({
+                company: $('#m_company').value,
+                position: $('#m_position').value,
+                resumeLink: $('#m_resume').value,
+                resumeName: $('#m_resumeName').value,
+                status: $('#m_status').value,
+                dateTimeApplied: $('#m_applied').value,
+                careerUrl: $('#m_url').value,
+                notes: $('#m_notes').value
+            });
+
+            if (!a.company || !a.position || !a.resumeLink) {
+                return alert('Company, Position, and Resume Link are required.');
+            }
+
+            saveSuggestion('company', a.company);
+            saveSuggestion('position', a.position);
+            saveSuggestion('resumeLink', a.resumeLink, { name: a.resumeName });
+            saveSuggestion('careerUrl', a.careerUrl);
+
+            if (editingSignature) {
+                const idx = applications.findIndex(x => signature(x) === editingSignature);
+                if (idx !== -1) applications[idx] = { ...applications[idx], ...a };
+            } else {
+                applications.push(a);
+            }
+
+            applications = dedupe(applications);
+            localStorage.setItem(KEYS.applications, JSON.stringify(applications));
+            closeModal();
+            renderAll();
+            $('#lastSaved').textContent = 'Saved ' + tzStamp();
+        });
+
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', e => {
+            if (e.key === 'n' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                openModalForAdd();
+            }
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeModal();
+            }
+        });
+
+        /* ===== Sort / Search / Filter ===== */
+        function sortTable(arr, col, asc) {
+            return arr.slice().sort((a, b) => {
+                const A = a[col] || '', B = b[col] || '';
+                const cmp = typeof A === 'number' ? A - B : String(A).localeCompare(String(B));
+                return asc ? cmp : -cmp;
+            });
+        }
+
+        function applyAppSortHeaderUI() {
+            $$('#apps thead th.sortable').forEach(t => {
+                t.classList.remove('asc', 'desc');
+                if (t.dataset.col === appSort.column) t.classList.add(appSort.asc ? 'asc' : 'desc');
+            });
+        }
+
+        $$('#apps thead th.sortable').forEach(th => th.addEventListener('click', () => {
+            const col = th.dataset.col;
+            if (appSort.column === col) appSort.asc = !appSort.asc;
+            else { appSort.column = col; appSort.asc = true; }
+            localStorage.setItem(KEYS.appSort, JSON.stringify(appSort));
+            applyAppSortHeaderUI();
+            renderApps();
+        }));
+
+        let searchTerm = '', statusFilter = 'all';
+
+        $('#searchInput').addEventListener('input', e => { searchTerm = e.target.value.toLowerCase(); renderApps(); });
+        $('#statusFilter').addEventListener('change', e => { statusFilter = e.target.value; renderApps(); });
+
+        function matchApp(a) {
+            const q = searchTerm;
+            const match = q ? [a.company, a.position, a.notes, a.resumeName].some(f => String(f).toLowerCase().includes(q)) : true;
+            const statusOk = statusFilter === 'all' || a.status === statusFilter;
+            return match && statusOk;
+        }
+
+        /* ===== Quick Status Chips ===== */
+        function renderQuickStatus() {
+            const counts = {};
+            ALL_STATUSES.forEach(s => counts[s] = 0);
+            applications.forEach(a => counts[a.status]++);
+            const wrap = $('#quickStatus');
+            wrap.innerHTML = '';
+
+            const allChip = document.createElement('span');
+            allChip.className = 'chip' + (statusFilter === 'all' ? ' active' : '');
+            allChip.innerHTML = `All <span class="cnt">${applications.length}</span>`;
+            allChip.onclick = () => { statusFilter = 'all'; $('#statusFilter').value = 'all'; renderApps(); renderQuickStatus(); };
+            wrap.appendChild(allChip);
+
+            ALL_STATUSES.forEach(s => {
+                if (counts[s] > 0) {
+                    const chip = document.createElement('span');
+                    chip.className = 'chip' + (statusFilter === s ? ' active' : '');
+                    chip.innerHTML = `${s} <span class="cnt">${counts[s]}</span>`;
+                    chip.onclick = () => { statusFilter = s; $('#statusFilter').value = s; renderApps(); renderQuickStatus(); };
+                    wrap.appendChild(chip);
+                }
+            });
+        }
+
+        /* ===== Render Applications Table ===== */
+        function renderApps() {
+            const tbody = $('#appTableBody');
+            tbody.innerHTML = '';
+            let data = applications.filter(matchApp);
+            if (appSort.column) data = sortTable(data, appSort.column, appSort.asc);
+
+            if (!data.length) {
+                tbody.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <div class="emoji">📝</div>
+                <div class="title">No applications yet</div>
+                <div class="desc">Click "Add Application" or press Ctrl+N to get started!</div>
+              </div>
+            </td>
+          </tr>
+        `;
+                return;
+            }
+
+            data.forEach(a => {
+                const tr = document.createElement('tr');
+                const resumeDisplay = a.resumeName || 'Resume';
+
+                tr.innerHTML = `
+          <td><strong>${a.company}</strong></td>
+          <td>${a.position}</td>
+          <td style="position:relative">
+            <span class="badge" data-signature="${signature(a)}">
+              ${a.status}
+            </span>
+            <div class="status-dropdown">
+              ${ALL_STATUSES.map(s => `<div class="status-option ${s === a.status ? 'current' : ''}" data-status="${s}">${s}</div>`).join('')}
+            </div>
+          </td>
+          <td class="small">${fmtShort(a.dateTimeApplied)}</td>
+          <td>${a.resumeLink ? `<a href="${a.resumeLink}" target="_blank" class="resume-link" title="${a.resumeLink}">📄 <span class="name">${resumeDisplay}</span></a>` : ''}</td>
+          <td>${a.careerUrl ? `<a href="${a.careerUrl}" target="_blank" title="View job posting">🔗</a>` : ''}</td>
+          <td class="small" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.notes}">${a.notes}</td>
+          <td>
+            <span class="ico" title="Edit" data-signature="${signature(a)}" data-action="edit">✏️</span>
+            <span class="ico" title="Delete" data-signature="${signature(a)}" data-action="delete">🗑️</span>
+          </td>
+        `;
+
+                const badge = tr.querySelector('.badge');
+                const dropdown = tr.querySelector('.status-dropdown');
+
+                badge.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    $$('.status-dropdown').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+                    dropdown.classList.toggle('show');
+                });
+
+                dropdown.querySelectorAll('.status-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const newStatus = e.target.dataset.status;
+                        const sig = badge.dataset.signature;
+                        const app = applications.find(x => signature(x) === sig);
+                        if (app) {
+                            app.status = newStatus;
+                            localStorage.setItem(KEYS.applications, JSON.stringify(applications));
+                            renderAll();
+                            $('#lastSaved').textContent = 'Updated ' + tzStamp();
+                        }
+                    });
+                });
+
+                tr.querySelector('[data-action="edit"]').addEventListener('click', e => {
+                    const app = applications.find(x => signature(x) === e.target.dataset.signature);
+                    if (app) openModalForEdit(app);
+                });
+
+                tr.querySelector('[data-action="delete"]').addEventListener('click', e => {
+                    if (confirm('Delete this application?')) {
+                        applications = applications.filter(x => signature(x) !== e.target.dataset.signature);
+                        localStorage.setItem(KEYS.applications, JSON.stringify(applications));
+                        renderAll();
+                    }
+                });
+
+                tbody.appendChild(tr);
+            });
+
+            document.addEventListener('click', () => {
+                $$('.status-dropdown').forEach(d => d.classList.remove('show'));
+            });
+        }
+
+        /* ===== Analytics ===== */
+        function renderAnalytics() {
+            const now = new Date(), weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            const thisWeek = applications.filter(a => new Date(a.dateTimeApplied) >= weekStart).length;
+            const inProgress = applications.filter(a => !['Rejected', 'Ghosted', 'Withdrawn', 'Offer'].includes(a.status)).length;
+            const offerRate = applications.length ? (applications.filter(a => a.status === 'Offer').length / applications.length * 100).toFixed(1) : 0;
+
+            $('#kpiTotal').textContent = applications.length;
+            $('#kpiWeek').textContent = thisWeek;
+            $('#kpiInProgress').textContent = inProgress;
+            $('#kpiOfferRate').textContent = offerRate + '%';
+
+            const weekLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const weekVals = Array(7).fill(0);
+            applications.forEach(a => {
+                const d = new Date(a.dateTimeApplied);
+                if (d >= weekStart) weekVals[d.getDay()]++;
+            });
+            drawBars('#weeklyBars', weekLabels, weekVals, settings.dailyTarget);
+
+            renderWeeklyDonut(thisWeek, settings.weeklyGoal);
+            $('#weeklyGoalText').textContent = `${thisWeek} / ${settings.weeklyGoal} this week`;
+
+            const monthVals = [];
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(now.getDate() - i);
+                monthVals.push(applications.filter(a => new Date(a.dateTimeApplied).toDateString() === d.toDateString()).length);
+            }
+            drawLine('#monthLine', monthVals, settings.dailyTarget);
+        }
+
+        /* ===== Side Charts ===== */
+        function renderSideCharts() {
+            const byDay = {}, end = new Date();
+            applications.forEach(a => {
+                const d = new Date(a.dateTimeApplied);
+                if (isNaN(+d)) return;
+                const k = d.toISOString().slice(0, 10);
+                byDay[k] = (byDay[k] || 0) + 1;
+            });
+
+            const days = 14, target = settings.dailyTarget, labelsIso = [], vals = [];
+            for (let i = days - 1; i >= 0; i--) {
+                const d = new Date(end);
+                d.setDate(end.getDate() - i);
+                const k = d.toISOString().slice(0, 10);
+                labelsIso.push(k);
+                vals.push(byDay[k] || 0);
+            }
+            drawDailyBars('#dailyBars', labelsIso, vals, target);
+            drawDailyTrend('#dailyTrend', labelsIso, vals, target);
+            wireBarTooltips('#dailyBars', labelsIso, vals);
+
+            const sow = new Date(end);
+            sow.setDate(end.getDate() - end.getDay());
+            const wVals = [];
+            let c = 0, cum = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(sow);
+                d.setDate(sow.getDate() + i);
+                const k = d.toISOString().slice(0, 10);
+                wVals.push(byDay[k] || 0);
+            }
+            cum = wVals.map(v => (c += v));
+            drawSpark('#weekLine', cum, settings.weeklyGoal);
+            $('#weekSummary').innerHTML = `<span style="color: var(--yellow); font-size: 20px;">${cum[cum.length - 1] || 0}</span> / ${settings.weeklyGoal} this week`;
+
+            const statusCounts = {};
+            ALL_STATUSES.forEach(s => statusCounts[s] = 0);
+            applications.forEach(a => statusCounts[a.status]++);
+            drawStatusDonut('#statusDonut', statusCounts);
+
+            const funnelData = {
+                applied: applications.filter(a => !['Rejected', 'Ghosted', 'Withdrawn'].includes(a.status)).length,
+                interview: applications.filter(a => ['Phone Screen', 'Technical Interview', 'Onsite Interview', 'Final Interview', 'Offer'].includes(a.status)).length,
+                offer: applications.filter(a => a.status === 'Offer').length
+            };
+            drawFunnel('#funnel', funnelData);
+        }
+
+        /* ===== Saved Resumes ===== */
+        function renderSavedResumes() {
+            const container = $('#savedResumes');
+            const resumes = Object.values(suggestions.resumeLink || {});
+
+            if (resumes.length === 0) {
+                container.innerHTML = '<div style="color: var(--white-50); padding: 12px; text-align: center;">No saved resumes yet.</div>';
+                return;
+            }
+
+            container.innerHTML = resumes.map(r => `
+        <div style="padding: 10px 0; border-bottom: 1px solid var(--white-10); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 600; color: var(--white);">${r.name || 'Unnamed'}</div>
+            <div style="font-size: 11px; color: var(--white-50); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;">${r.value}</div>
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--yellow);">×${r.count}</span>
+        </div>
+      `).join('');
+        }
+
+        /* ===== Chart Helpers ===== */
+        function drawDailyBars(sel, isoLabels, vals, target) {
+            const svg = $(sel);
+            const W = 360, H = 180, P = 24;
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            const max = Math.max(target, ...vals, 5);
+            svg.appendChild(line(P, H - P, W - P, H - P, 'var(--white-10)'));
+            const ty = Math.max(P, H - P - (target / max) * (H - 2 * P));
+            const t = line(P, ty, W - P, ty, 'var(--yellow)');
+            t.setAttribute('stroke-dasharray', '6,4');
+            t.setAttribute('opacity', '0.6');
+            svg.appendChild(t);
+            const n = vals.length, gap = 4, bw = ((W - 2 * P) - gap * (n - 1)) / n;
+            vals.forEach((v, i) => {
+                const h = (v / max) * (H - 2 * P), x = P + i * (bw + gap), y = H - P - h;
+                const r = rect(x, y, bw, h, 3, v >= target ? 'var(--green)' : 'var(--yellow)');
+                r.setAttribute('data-i', i);
+                r.style.cursor = 'crosshair';
+                svg.appendChild(r);
+                if (i % 2 === 0) {
+                    const d = new Date(isoLabels[i]);
+                    svg.appendChild(text(x + bw / 2, H - 6, (d.getMonth() + 1) + '/' + d.getDate(), 'middle', 'var(--white-50)', 9));
+                }
+            });
+        }
+
+        function drawDailyTrend(sel, isoLabels, vals, target) {
+            const svg = $(sel);
+            const W = 360, H = 180, P = 24;
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            if (vals.length === 0) return;
+            const max = Math.max(target, ...vals, 5), n = vals.length, gap = 4, bw = ((W - 2 * P) - gap * (n - 1)) / n;
+
+            const ty = Math.max(P, H - P - (target / max) * (H - 2 * P));
+            const t = line(P, ty, W - P, ty, 'var(--yellow)');
+            t.setAttribute('stroke-dasharray', '6,4');
+            t.setAttribute('opacity', '0.6');
+            svg.appendChild(t);
+
+            const sma = [];
+            for (let i = 0; i < n; i++) {
+                const a = vals[Math.max(0, i - 1)] || 0, b = vals[i] || 0, c = vals[Math.min(n - 1, i + 1)] || 0;
+                sma.push((a + b + c) / 3);
+            }
+            let d = '';
+            sma.forEach((v, i) => {
+                const x = P + i * (bw + gap) + bw / 2, y = H - P - (v / max) * (H - 2 * P);
+                d += (i ? ' L' : 'M') + x + ' ' + y;
+            });
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'var(--white)');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            svg.appendChild(path);
+        }
+
+        function drawSpark(sel, series, goal) {
+            const svg = $(sel);
+            const W = 360, H = 120, P = 18;
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            const max = Math.max(goal, ...series, 1), step = (W - 2 * P) / Math.max(1, series.length - 1);
+            const gy = Math.max(P, H - P - (goal / max) * (H - 2 * P));
+            const goalLine = line(P, gy, W - P, gy, 'var(--white-50)');
+            goalLine.setAttribute('stroke-dasharray', '4,4');
+            svg.appendChild(goalLine);
+            let d = '';
+            series.forEach((v, i) => {
+                const x = P + i * step, y = H - P - (v / max) * (H - 2 * P);
+                d += (i ? ' L' : 'M') + x + ' ' + y;
+            });
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'var(--yellow)');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(path);
+        }
+
+        function wireBarTooltips(sel, isoLabels, vals) {
+            const svg = $(sel);
+            const tip = $('#barTooltip');
+            if (!svg || !tip) return;
+            svg.onmousemove = (e) => {
+                const t = e.target.closest('rect');
+                if (!t) { tip.style.display = 'none'; return; }
+                const i = +t.getAttribute('data-i');
+                if (Number.isNaN(i)) return;
+                const d = new Date(isoLabels[i]);
+                const label = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+                tip.innerHTML = `${label}: <strong>${vals[i]}</strong> apps`;
+                tip.style.left = e.clientX + 'px';
+                tip.style.top = e.clientY + 'px';
+                tip.style.display = 'block';
+            };
+            svg.onmouseleave = () => { tip.style.display = 'none'; };
+        }
+
+        function drawBars(sel, labels, values, target) {
+            const svg = $(sel);
+            const W = 700, H = 190, P = 30, max = Math.max(target, ...values, 5);
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            svg.appendChild(line(P, H - P, W - P, H - P, 'var(--white-10)'));
+            const ty = Math.max(P, H - P - (target / max) * (H - 2 * P));
+            const tline = line(P, ty, W - P, ty, 'var(--yellow)');
+            tline.setAttribute('stroke-dasharray', '6,4');
+            tline.setAttribute('opacity', '0.6');
+            svg.appendChild(tline);
+            const n = values.length, gap = 8, bw = ((W - 2 * P) - gap * (n - 1)) / n;
+            values.forEach((v, i) => {
+                const h = (v / max) * (H - 2 * P), x = P + i * (bw + gap), y = H - P - h;
+                svg.appendChild(rect(x, y, bw, h, 6, v >= target ? 'var(--green)' : 'var(--yellow)'));
+                svg.appendChild(text(x + bw / 2, H - 8, labels[i], 'middle', 'var(--white-50)', 11));
+            });
+        }
+
+        function renderWeeklyDonut(value, goal) {
+            const pct = Math.max(0, Math.min(1, value / goal));
+            const C = 2 * Math.PI * 50, dash = Math.round(C * pct);
+            const arc = $('#weeklyArc');
+            arc.setAttribute('stroke-dasharray', `${dash} ${C - dash}`);
+            arc.setAttribute('stroke', value >= goal ? 'var(--green)' : 'var(--yellow)');
+            $('#weeklyPct').textContent = Math.round(pct * 100) + '%';
+        }
+
+        function drawLine(sel, series, goal) {
+            const svg = $(sel);
+            const W = 700, H = 120, P = 20;
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            const max = Math.max(goal, ...series, 1);
+            const step = (W - 2 * P) / Math.max(1, series.length - 1);
+            const gy = Math.max(P, H - P - (goal / max) * (H - 2 * P));
+            const goalLine = line(P, gy, W - P, gy, 'var(--white-20)');
+            goalLine.setAttribute('stroke-dasharray', '4,4');
+            svg.appendChild(goalLine);
+            let d = '';
+            series.forEach((v, i) => {
+                const x = P + i * step, y = H - P - (v / max) * (H - 2 * P);
+                d += (i ? ' L' : 'M') + x + ' ' + y;
+            });
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'var(--yellow)');
+            path.setAttribute('stroke-width', '2');
+            svg.appendChild(path);
+        }
+
+        function drawStatusDonut(sel, counts) {
+            const svg = $(sel);
+            const R = 80, C = 2 * Math.PI * R;
+            svg.setAttribute('viewBox', '0 0 220 220');
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+            const palette = ['var(--yellow)', 'var(--yellow-light)', 'var(--green)', '#f59e0b', '#fb923c', 'var(--red)', '#ec4899', '#a78bfa', '#22d3ee', '#14b8a6', '#f97316'];
+            let start = 0, i = 0;
+            for (const s of ALL_STATUSES) {
+                const v = counts[s] || 0;
+                const frac = v / total;
+                const len = C * frac;
+                const ring = circle(110, 110, R, 'none', palette[i % palette.length], 16);
+                ring.setAttribute('stroke-dasharray', `${len} ${C - len}`);
+                ring.setAttribute('transform', 'rotate(-90 110 110)');
+                ring.setAttribute('stroke-dashoffset', -start);
+                svg.appendChild(ring);
+                start += len;
+                i++;
+            }
+            svg.appendChild(text(110, 105, total, 'middle', 'var(--white)', 24));
+            svg.appendChild(text(110, 125, 'apps', 'middle', 'var(--white-50)', 12));
+        }
+
+        function drawFunnel(sel, data) {
+            const svg = $(sel);
+            const W = 280, H = 160, P = 16;
+            svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+            while (svg.firstChild) svg.removeChild(svg.firstChild);
+            const stages = [['Applied', data.applied || 0, 'var(--yellow)'], ['Interview', data.interview || 0, 'var(--yellow-light)'], ['Offer', data.offer || 0, 'var(--green)']];
+            const max = Math.max(...stages.map(s => s[1]), 1), barH = 36, gap = 14;
+            stages.forEach((s, idx) => {
+                const w = Math.max(40, (s[1] / max) * (W - 2 * P)), x = (W - w) / 2, y = P + idx * (barH + gap);
+                svg.appendChild(rect(x, y, w, barH, 10, s[2]));
+                svg.appendChild(text(W / 2, y + barH / 2 + 5, `${s[0]} — ${s[1]}`, 'middle', 'var(--navy-dark)', 12));
+            });
+        }
+
+        function rect(x, y, w, h, r, fill) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            el.setAttribute('x', x); el.setAttribute('y', y);
+            el.setAttribute('width', w); el.setAttribute('height', h);
+            el.setAttribute('rx', r); el.setAttribute('fill', fill);
+            return el;
+        }
+
+        function line(x1, y1, x2, y2, stroke) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            el.setAttribute('x1', x1); el.setAttribute('y1', y1);
+            el.setAttribute('x2', x2); el.setAttribute('y2', y2);
+            el.setAttribute('stroke', stroke);
+            return el;
+        }
+
+        function text(x, y, str, anchor, fill, size) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            el.setAttribute('x', x); el.setAttribute('y', y);
+            el.setAttribute('text-anchor', anchor || 'start');
+            el.setAttribute('fill', fill || 'var(--white-50)');
+            el.setAttribute('font-size', size || '12');
+            el.setAttribute('font-weight', '600');
+            el.textContent = str;
+            return el;
+        }
+
+        function circle(cx, cy, r, fill, stroke, sw) {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            el.setAttribute('cx', cx); el.setAttribute('cy', cy);
+            el.setAttribute('r', r);
+            fill && el.setAttribute('fill', fill);
+            stroke && el.setAttribute('stroke', stroke);
+            sw && el.setAttribute('stroke-width', sw);
+            return el;
+        }
+
+        /* ===== Export / Import / Reset ===== */
+        function exportJson() {
+            const data = {
+                applications: dedupe(applications.map(sanitize)),
+                suggestions,
+                settings,
+                trackingStartDate,
+                meta: { version: 'v3', exportedAt: new Date().toISOString() }
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'application_tracker.json';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 800);
+        }
+
+        $('#exportJsonBtn').addEventListener('click', exportJson);
+        $('#exportJsonBtn2').addEventListener('click', exportJson);
+
+        $('#exportCsvBtn').addEventListener('click', () => {
+            const header = ['company', 'position', 'resumeLink', 'resumeName', 'status', 'dateTimeApplied', 'careerUrl', 'notes', 'addedDate'];
+            const rows = [header.join(',')].concat(applications.map(a => header.map(k => '"' + String(a[k] || '').replace(/"/g, '""') + '"').join(',')));
+            const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'applications.csv';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 800);
+        });
+
+        $('#importBtn').addEventListener('click', () => $('#importFile').click());
+
+        $('#importFile').addEventListener('change', e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const parsed = JSON.parse(reader.result);
+                    const incoming = Array.isArray(parsed.applications) ? parsed.applications.map(sanitize) : [];
+                    applications = dedupe([...applications, ...incoming]);
+                    localStorage.setItem(KEYS.applications, JSON.stringify(applications));
+                    if (parsed.suggestions) {
+                        suggestions = { ...suggestions, ...parsed.suggestions };
+                        localStorage.setItem(KEYS.suggestions, JSON.stringify(suggestions));
+                    }
+                    if (parsed.settings) {
+                        settings = { ...settings, ...parsed.settings };
+                        localStorage.setItem(KEYS.settings, JSON.stringify(settings));
+                    }
+                    alert('Import complete!');
+                    syncSettingsUI();
+                    renderAll();
+                } catch (err) {
+                    alert('Invalid JSON file.');
+                }
+            };
+            reader.readAsText(f);
+        });
+
+        function resetAll() {
+            if (!confirm('Delete ALL data? This cannot be undone.')) return;
+            Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+            applications = [];
+            suggestions = { company: {}, position: {}, resumeLink: {}, careerUrl: {} };
+            settings = { dailyTarget: 30, weeklyGoal: 100, backlogEnabled: true };
+            trackingStartDate = todayKey();
+            localStorage.setItem(KEYS.trackingStartDate, trackingStartDate);
+            appSort = { column: '', asc: true };
+            syncSettingsUI();
+            renderAll();
+            applyAppSortHeaderUI();
+        }
+
+        $('#resetBtn').addEventListener('click', resetAll);
+
+        $('#clearSuggestionsBtn').addEventListener('click', () => {
+            if (confirm('Clear all autocomplete suggestions?')) {
+                suggestions = { company: {}, position: {}, resumeLink: {}, careerUrl: {} };
+                localStorage.setItem(KEYS.suggestions, JSON.stringify(suggestions));
+                renderSavedResumes();
+                alert('Suggestions cleared!');
+            }
+        });
+
+        $('#clearResumes').addEventListener('click', () => {
+            if (confirm('Clear all saved resume links?')) {
+                suggestions.resumeLink = {};
+                localStorage.setItem(KEYS.suggestions, JSON.stringify(suggestions));
+                renderSavedResumes();
+                alert('Saved resumes cleared!');
+            }
+        });
+
+        /* ===== Render All ===== */
+        function renderAll() {
+            updateDailyTracking();
+            renderApps();
+            renderAnalytics();
+            renderQuickStatus();
+            renderSideCharts();
+            renderSavedResumes();
+        }
+
+        /* ===== Init ===== */
+        applyAppSortHeaderUI();
+        renderAll();
+    </script>
+</body>
+
+</html>

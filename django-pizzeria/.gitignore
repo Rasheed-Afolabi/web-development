@@ -1,0 +1,59 @@
+dvenv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+ENV/
+env/
+
+# Django local database
+*.sqlite3
+db.sqlite3
+
+
+# Media and uploaded files
+media/
+
+# Logs
+*.log
+
+# Static files (collected by collectstatic)
+staticfiles/
+
+# Editor & IDE settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python egg and build artifacts
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+*.manifest
+*.spec
+
+# Testing / coverage
+.coverage
+.tox/
+.nox/
+.cache/
+*.cover
+*.py,cover
+coverage.xml
+htmlcov/

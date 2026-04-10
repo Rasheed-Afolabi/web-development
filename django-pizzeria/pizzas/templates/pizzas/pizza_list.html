@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html><head><title>Pizza List</title></head>
+<body><h1>Our Pizza Menu</h1><ul>
+{% for pizza in pizzas %}
+<li><a href="{% url 'pizza_detail' pizza.id %}">{{ pizza.pizza_name }}</a><br>
+{% if pizza.pizza_image %}<img src="{{ pizza.pizza_image.url }}" width="200">{% endif %}
+</li>
+{% endfor %}
+</ul></body></html>
