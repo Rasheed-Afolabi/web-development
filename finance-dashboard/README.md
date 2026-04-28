@@ -36,3 +36,4 @@ Open `http://localhost:5173` in your browser.
 ## Built With Claude Code
 
 This project uses a `CLAUDE.md` file and supporting docs (`docs/ARCHITECTURE.md`, `docs/DOMAIN.md`, `docs/DESIGN.md`, `docs/WORKFLOW.md`) to maintain consistent development with Claude Code in VS Code. See `docs/WORKFLOW.md` for the full development and maintenance guide.
+
