@@ -50,16 +50,16 @@ export function Sidebar() {
   const syncStatus = useAppSyncStatus();
 
   return (
-    <aside className="hidden md:flex w-64 min-h-screen bg-bg-primary border-r border-border-subtle flex-col">
+    <aside className="hidden md:flex w-64 min-h-screen bg-[#05192D] border-r border-[#1A3A5C] flex-col">
       <div className="p-6 pb-5 space-y-3">
         <div>
-          <h1 className="font-display font-bold text-xl text-text-primary tracking-tight">
+          <h1 className="font-display font-bold text-xl text-white tracking-tight">
             Rasko Finance
           </h1>
-          <p className="text-text-muted text-xs mt-1 font-body">Command Center</p>
+          <p className="text-[#8BA4BE] text-xs mt-1 font-body">Command Center</p>
         </div>
         <SyncBadge />
-        <p className="text-[11px] text-text-muted font-body leading-relaxed">
+        <p className="text-[11px] text-[#8BA4BE] font-body leading-relaxed">
           {syncStatus.message}
         </p>
       </div>
@@ -72,8 +72,8 @@ export function Sidebar() {
             className={({ isActive }) =>
               `flex min-h-11 items-center gap-3 px-4 py-3 rounded-xl text-sm font-body font-medium transition-all duration-200 mb-1 ${
                 isActive
-                  ? 'bg-bg-tertiary text-text-primary border border-border-active shadow-[0_0_0_1px_rgba(74,74,106,0.35)]'
-                  : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary border border-transparent'
+                  ? 'bg-[#0D2847] text-white border border-[#1A3A5C]'
+                  : 'text-[#8BA4BE] hover:bg-[#0D2847] hover:text-white border border-transparent'
               }`
             }
           >
