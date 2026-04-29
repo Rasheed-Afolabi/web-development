@@ -34,16 +34,16 @@ export function MonthlyTrendLine({ data }: MonthlyTrendLineProps) {
             <stop offset="100%" stopColor="#60A5FA" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2A2A3E" strokeOpacity={0.3} vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.3} vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => formatCurrency(v)}
@@ -57,7 +57,7 @@ export function MonthlyTrendLine({ data }: MonthlyTrendLineProps) {
           strokeWidth={2.5}
           fill="url(#trendGradient)"
           dot={false}
-          activeDot={{ r: 4, fill: '#60A5FA', stroke: '#0F0F14', strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: '#60A5FA', stroke: '#FFFFFF', strokeWidth: 2 }}
           animationDuration={1200}
           animationEasing="ease-out"
         />

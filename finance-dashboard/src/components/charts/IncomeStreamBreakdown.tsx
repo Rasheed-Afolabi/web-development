@@ -29,7 +29,7 @@ export function IncomeStreamBreakdown({ data }: IncomeStreamBreakdownProps) {
       <BarChart data={chartData} layout="vertical" barSize={24}>
         <XAxis
           type="number"
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => formatCurrency(v)}
@@ -37,7 +37,7 @@ export function IncomeStreamBreakdown({ data }: IncomeStreamBreakdownProps) {
         <YAxis
           type="category"
           dataKey="name"
-          tick={{ fill: '#9898B0', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#4E5D78', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           width={140}

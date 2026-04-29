@@ -6,27 +6,27 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Design system colors */
-  --color-bg-primary: #0F0F14;
-  --color-bg-secondary: #1A1A24;
-  --color-bg-tertiary: #24243A;
-  --color-bg-elevated: #2A2A42;
+  /* Design system colors — DataCamp-inspired light theme */
+  --color-bg-primary: #F0F2F5;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #E8ECF1;
+  --color-bg-elevated: #FFFFFF;
 
-  --color-text-primary: #F0F0F5;
-  --color-text-secondary: #9898B0;
-  --color-text-muted: #5A5A72;
+  --color-text-primary: #1A1F36;
+  --color-text-secondary: #4E5D78;
+  --color-text-muted: #8492A6;
 
-  --color-accent-green: #34D399;
-  --color-accent-green-dim: #065F46;
-  --color-accent-amber: #FBBF24;
-  --color-accent-amber-dim: #78350F;
-  --color-accent-red: #F87171;
-  --color-accent-red-dim: #7F1D1D;
-  --color-accent-blue: #60A5FA;
-  --color-accent-indigo: #818CF8;
+  --color-accent-green: #06C167;
+  --color-accent-green-dim: #E6F9EF;
+  --color-accent-amber: #F5A623;
+  --color-accent-amber-dim: #FFF8E6;
+  --color-accent-red: #E53E3E;
+  --color-accent-red-dim: #FEE6E6;
+  --color-accent-blue: #3B82F6;
+  --color-accent-indigo: #6366F1;
 
-  --color-border-subtle: #2A2A3E;
-  --color-border-active: #4A4A6A;
+  --color-border-subtle: #E2E8F0;
+  --color-border-active: #CBD5E1;
 
   /* Fonts */
   --font-display: 'Instrument Sans', sans-serif;
@@ -86,40 +86,40 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Dark theme (always active — we only use dark mode) */
+/* DataCamp-inspired theme */
 :root {
-  --background: #0F0F14;
-  --foreground: #F0F0F5;
-  --card: #1A1A24;
-  --card-foreground: #F0F0F5;
-  --popover: #2A2A42;
-  --popover-foreground: #F0F0F5;
-  --primary: #60A5FA;
-  --primary-foreground: #0F0F14;
-  --secondary: #24243A;
-  --secondary-foreground: #F0F0F5;
-  --muted: #1A1A24;
-  --muted-foreground: #9898B0;
-  --accent: #24243A;
-  --accent-foreground: #F0F0F5;
-  --destructive: #F87171;
-  --border: #2A2A3E;
-  --input: #2A2A3E;
-  --ring: #60A5FA;
-  --chart-1: #34D399;
-  --chart-2: #60A5FA;
-  --chart-3: #FBBF24;
-  --chart-4: #F87171;
-  --chart-5: #818CF8;
+  --background: #F0F2F5;
+  --foreground: #1A1F36;
+  --card: #FFFFFF;
+  --card-foreground: #1A1F36;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1F36;
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E8ECF1;
+  --secondary-foreground: #1A1F36;
+  --muted: #F0F2F5;
+  --muted-foreground: #4E5D78;
+  --accent: #E8ECF1;
+  --accent-foreground: #1A1F36;
+  --destructive: #E53E3E;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #3B82F6;
+  --chart-1: #06C167;
+  --chart-2: #3B82F6;
+  --chart-3: #F5A623;
+  --chart-4: #E53E3E;
+  --chart-5: #6366F1;
   --radius: 0.75rem;
-  --sidebar: #0F0F14;
-  --sidebar-foreground: #F0F0F5;
-  --sidebar-primary: #60A5FA;
-  --sidebar-primary-foreground: #F0F0F5;
-  --sidebar-accent: #24243A;
-  --sidebar-accent-foreground: #F0F0F5;
-  --sidebar-border: #2A2A3E;
-  --sidebar-ring: #60A5FA;
+  --sidebar: #05192D;
+  --sidebar-foreground: #E2E8F0;
+  --sidebar-primary: #3B82F6;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #0D2847;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #1A3A5C;
+  --sidebar-ring: #3B82F6;
 }
 
 @keyframes fade-in-up {
@@ -155,8 +155,8 @@
 
 /* Base styles */
 html {
-  background-color: #0F0F14;
-  color: #F0F0F5;
+  background-color: #F0F2F5;
+  color: #1A1F36;
 }
 
 body {
@@ -176,16 +176,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0F0F14;
+  background: #F0F2F5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A2A3E;
+  background: #CBD5E1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #4A4A6A;
+  background: #94A3B8;
 }
 
 @layer base {

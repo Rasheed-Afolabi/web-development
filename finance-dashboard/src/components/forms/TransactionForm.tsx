@@ -28,7 +28,12 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
   const [incomeStream, setIncomeStream] = useState<IncomeStream | ''>('');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [note, setNote] = useState('');
+  const [customName, setCustomName] = useState('');
   const [error, setError] = useState('');
+
+  const showCustomName =
+    (type === 'expense' && category === 'miscellaneous') ||
+    (type === 'income' && incomeStream === 'other');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +56,14 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
       setError('Please select an income stream');
       return;
     }
+    if (showCustomName && !customName.trim()) {
+      setError('Please enter a name for this item');
+      return;
+    }
+
+    const finalNote = showCustomName
+      ? (note ? `${customName.trim()} — ${note}` : customName.trim())
+      : (note || undefined);
 
     addTransaction({
       type,
@@ -58,13 +71,14 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
       category: type === 'income' ? (incomeStream || 'other') : category,
       incomeStream: type === 'income' ? (incomeStream as IncomeStream) : undefined,
       date,
-      note: note || undefined,
+      note: finalNote,
     });
 
     setAmount('');
     setCategory('');
     setIncomeStream('');
     setNote('');
+    setCustomName('');
     onSuccess?.();
   };
 
@@ -140,6 +154,20 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
               ))}
             </SelectContent>
           </Select>
+        </div>
+      )}
+
+      {showCustomName && (
+        <div>
+          <Label className="text-text-secondary text-xs">What is it?</Label>
+          <Input
+            type="text"
+            placeholder="e.g. Freelance gig, Gift, Side hustle..."
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            className="mt-1 bg-bg-tertiary border-border-subtle text-text-primary"
+            required
+          />
         </div>
       )}
 

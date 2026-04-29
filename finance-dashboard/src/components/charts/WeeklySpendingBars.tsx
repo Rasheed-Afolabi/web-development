@@ -43,22 +43,22 @@ export function WeeklySpendingBars({ data }: WeeklySpendingBarsProps) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2A2A3E" strokeOpacity={0.3} vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.3} vertical={false} />
         <XAxis
           dataKey="day"
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => formatCurrency(v)}
         />
         <Tooltip content={<ChartTooltip />} />
         <Legend
-          wrapperStyle={{ fontSize: 11, fontFamily: 'DM Sans', color: '#9898B0' }}
+          wrapperStyle={{ fontSize: 11, fontFamily: 'DM Sans', color: '#4E5D78' }}
         />
         {CATEGORY_GROUPS.map(({ id }) => (
           <Bar
