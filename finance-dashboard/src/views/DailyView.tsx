@@ -9,8 +9,10 @@ import { TransactionList } from '@/components/dashboard/TransactionList';
 import { CategoryDonutChart } from '@/components/charts/CategoryDonutChart';
 import { EmptyState } from '@/components/dashboard/EmptyState';
 import { useSettingsStore } from '@/stores/useSettingsStore';
+import { useTransactionStore } from '@/stores/useTransactionStore';
 import { formatCurrency } from '@/lib/formatters';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
+import { History } from 'lucide-react';
 
 export function DailyView() {
   const today = useMemo(() => new Date(), []);
@@ -26,8 +28,14 @@ export function DailyView() {
   }, [today]);
 
   const { transactions, income, expenses, net, byCategory } = useTransactions(dayStart, dayEnd);
+  const allTransactions = useTransactionStore((s) => s.transactions);
   const progress = useGoalProgress();
   const weeklyTargets = useSettingsStore((s) => s.weeklyIncomeTargets);
+
+  const sortedHistory = useMemo(
+    () => [...allTransactions].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
+    [allTransactions],
+  );
 
   const totalWeeklyTarget = Object.values(weeklyTargets).reduce((a, b) => a + b, 0);
   const dailyBudget = totalWeeklyTarget > 0 ? Math.round(totalWeeklyTarget / 7) : 0;
@@ -99,6 +107,23 @@ export function DailyView() {
               <EmptyState
                 title="No transactions today"
                 description="Add your first transaction to start tracking."
+              />
+            )}
+          </DataCard>
+
+          {/* Full transaction history */}
+          <DataCard index={6}>
+            <div className="flex items-center gap-2 mb-4">
+              <History size={16} className="text-text-muted" />
+              <h3 className="text-text-secondary text-sm font-heading font-semibold">Transaction History</h3>
+              <span className="text-text-muted text-xs font-mono ml-auto">{sortedHistory.length} entries</span>
+            </div>
+            {sortedHistory.length > 0 ? (
+              <TransactionList transactions={sortedHistory} groupDates />
+            ) : (
+              <EmptyState
+                title="No history yet"
+                description="Your full transaction history will appear here."
               />
             )}
           </DataCard>

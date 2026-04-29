@@ -7,6 +7,7 @@ import { WeeklyView } from '@/views/WeeklyView';
 import { MonthlyView } from '@/views/MonthlyView';
 import { GoalView } from '@/views/GoalView';
 import { SettingsView } from '@/views/SettingsView';
+import { initializeAppSync } from '@/lib/app-sync';
 import { triggerBackup } from '@/lib/backup';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { useGoalStore } from '@/stores/useGoalStore';
@@ -15,12 +16,16 @@ import { useSettingsStore } from '@/stores/useSettingsStore';
 export function App() {
   // Subscribe to store changes for backup
   useEffect(() => {
+    const stopSync = initializeAppSync();
     const unsubs = [
       useTransactionStore.subscribe(triggerBackup),
       useGoalStore.subscribe(triggerBackup),
       useSettingsStore.subscribe(triggerBackup),
     ];
-    return () => unsubs.forEach((u) => u());
+    return () => {
+      stopSync();
+      unsubs.forEach((u) => u());
+    };
   }, []);
 
   return (

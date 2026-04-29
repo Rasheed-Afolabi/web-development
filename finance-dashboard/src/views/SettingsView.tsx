@@ -8,8 +8,8 @@ import { IncomeTargetForm } from '@/components/forms/IncomeTargetForm';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { exportTransactionsToCSV, parseCSVToTransactions, downloadCSV } from '@/lib/csv';
 import { Download, Upload, Trash2, Database } from 'lucide-react';
-import { STORAGE_KEYS } from '@/data/constants';
 import { format } from 'date-fns';
+import { getBackupJson } from '@/lib/backup';
 
 export function SettingsView() {
   const transactions = useTransactionStore((s) => s.transactions);
@@ -26,8 +26,7 @@ export function SettingsView() {
   };
 
   const handleExportJSON = () => {
-    const backup = localStorage.getItem(STORAGE_KEYS.BACKUP);
-    if (!backup) return;
+    const backup = getBackupJson();
     const blob = new Blob([backup], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

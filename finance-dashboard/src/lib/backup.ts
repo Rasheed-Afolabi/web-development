@@ -1,27 +1,23 @@
 import { STORAGE_KEYS } from '@/data/constants';
+import { buildSnapshotFromStores, serializeSnapshot } from '@/lib/app-state';
+import { SUPABASE_INSTANCE_ID } from '@/lib/supabase';
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
+function writeBackup() {
+  const snapshot = buildSnapshotFromStores(SUPABASE_INSTANCE_ID);
+  localStorage.setItem(STORAGE_KEYS.BACKUP, serializeSnapshot(snapshot));
+}
+
 export function triggerBackup() {
   if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    const backup: Record<string, unknown> = {};
-    for (const key of Object.values(STORAGE_KEYS)) {
-      if (key === STORAGE_KEYS.BACKUP) continue;
-      const data = localStorage.getItem(key);
-      if (data) {
-        backup[key] = JSON.parse(data);
-      }
-    }
-    localStorage.setItem(STORAGE_KEYS.BACKUP, JSON.stringify({
-      ...backup,
-      timestamp: new Date().toISOString(),
-    }));
-  }, 500);
+  debounceTimer = setTimeout(writeBackup, 500);
+}
+
+export function getBackupJson() {
+  return serializeSnapshot(buildSnapshotFromStores(SUPABASE_INSTANCE_ID));
 }
 
 export function initBackupListener() {
   window.addEventListener('storage', triggerBackup);
-  // Also listen to any store changes via a periodic check approach
-  // The stores will call triggerBackup directly via subscribe
 }
