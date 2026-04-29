@@ -25,14 +25,14 @@ export function QuickStats() {
   const animatedPercent = useAnimatedNumber(progress.percentComplete * 100);
 
   return (
-    <div className="mx-3 mb-4 rounded-xl bg-bg-secondary border border-border-subtle p-4 space-y-4">
-      <p className="text-text-secondary text-xs font-heading font-semibold uppercase tracking-wider">
+    <div className="mx-3 mb-4 rounded-xl bg-[#0D2847] border border-[#1A3A5C] p-4 space-y-4">
+      <p className="text-[#8BA4BE] text-xs font-heading font-semibold uppercase tracking-wider">
         Quick Stats
       </p>
 
       {/* Today's Spending */}
       <div className="flex items-center justify-between">
-        <span className="text-text-muted text-xs font-body">Today's Spending</span>
+        <span className="text-[#8BA4BE] text-xs font-body">Today's Spending</span>
         <AnimatedCurrency
           cents={todayData.expenses}
           className="font-mono text-sm font-semibold text-accent-red"
@@ -41,29 +41,29 @@ export function QuickStats() {
 
       {/* This Week divider */}
       <div className="flex items-center gap-2">
-        <div className="h-px flex-1 bg-border-subtle" />
+        <div className="h-px flex-1 bg-[#1A3A5C]" />
         <span className="text-text-muted text-[10px] font-body uppercase tracking-wider">This Week</span>
-        <div className="h-px flex-1 bg-border-subtle" />
+        <div className="h-px flex-1 bg-[#1A3A5C]" />
       </div>
 
       {/* Weekly stats */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-text-muted text-xs font-body">Income</span>
+          <span className="text-[#8BA4BE] text-xs font-body">Income</span>
           <AnimatedCurrency
             cents={weekData.income}
             className="font-mono text-sm font-semibold text-accent-green"
           />
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-text-muted text-xs font-body">Expenses</span>
+          <span className="text-[#8BA4BE] text-xs font-body">Expenses</span>
           <AnimatedCurrency
             cents={weekData.expenses}
             className="font-mono text-sm font-semibold text-accent-red"
           />
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-text-muted text-xs font-body">Net</span>
+          <span className="text-[#8BA4BE] text-xs font-body">Net</span>
           <AnimatedCurrency
             cents={weekData.net}
             className={`font-mono text-sm font-semibold ${weekData.net >= 0 ? 'text-accent-green' : 'text-accent-red'}`}
@@ -73,9 +73,9 @@ export function QuickStats() {
 
       {/* Goal divider */}
       <div className="flex items-center gap-2">
-        <div className="h-px flex-1 bg-border-subtle" />
+        <div className="h-px flex-1 bg-[#1A3A5C]" />
         <span className="text-text-muted text-[10px] font-body uppercase tracking-wider">Goal</span>
-        <div className="h-px flex-1 bg-border-subtle" />
+        <div className="h-px flex-1 bg-[#1A3A5C]" />
       </div>
 
       {/* Progress bar */}
@@ -89,7 +89,7 @@ export function QuickStats() {
             {Math.round(animatedPercent)}%
           </span>
         </div>
-        <div className="w-full h-2 bg-bg-tertiary rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-[#05192D] rounded-full overflow-hidden">
           <div
             className="h-full bg-accent-green rounded-full transition-all duration-1000"
             style={{ width: `${Math.min(progress.percentComplete * 100, 100)}%` }}
@@ -102,14 +102,14 @@ export function QuickStats() {
 
       {/* Pace status */}
       <div className="flex items-center justify-between">
-        <span className="text-text-muted text-xs font-body">Pace</span>
+        <span className="text-[#8BA4BE] text-xs font-body">Pace</span>
         <StatusBadge status={progress.paceStatus} />
       </div>
 
       {/* Days remaining */}
       <div className="flex items-center justify-between">
-        <span className="text-text-muted text-xs font-body">Days Remaining</span>
-        <span className="font-mono text-sm text-text-secondary font-medium">
+        <span className="text-[#8BA4BE] text-xs font-body">Days Remaining</span>
+        <span className="font-mono text-sm text-[#B0C4DE] font-medium">
           {progress.remainingDays}
         </span>
       </div>

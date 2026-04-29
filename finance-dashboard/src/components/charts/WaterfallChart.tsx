@@ -29,15 +29,15 @@ export function WaterfallChart({ data }: WaterfallChartProps) {
   return (
     <ResponsiveContainer width="100%" height={240}>
       <BarChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#2A2A3E" strokeOpacity={0.3} vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" strokeOpacity={0.3} vertical={false} />
         <XAxis
           dataKey="month"
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#5A5A72', fontSize: 12, fontFamily: 'DM Sans' }}
+          tick={{ fill: '#8492A6', fontSize: 12, fontFamily: 'DM Sans' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v: number) => formatCurrency(v)}
