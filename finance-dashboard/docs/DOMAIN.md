@@ -2,16 +2,23 @@
 
 ## Income Streams
 
-The user has three variable income sources. None are salaried — all fluctuate week to week.
+The user has multiple variable income sources. None are salaried — all fluctuate week to week.
 
 ```typescript
-type IncomeStream = 'ai-projects' | 'delivery' | 'factory' | 'other';
+type IncomeStream = 'ai-projects' | 'delivery' | 'factory' | 'freelance' | 'tutoring' | 'rideshare' | 'tips' | 'investments' | 'rental-income' | 'reselling' | 'other';
 
 const INCOME_STREAMS: Record<IncomeStream, { label: string; icon: string; color: string }> = {
-  'ai-projects':  { label: 'AI & Online Projects', icon: 'Brain',       color: '#6366F1' },  // indigo
-  'delivery':     { label: 'Delivery',             icon: 'Truck',       color: '#F59E0B' },  // amber
-  'factory':      { label: 'Factory Work',         icon: 'Factory',     color: '#10B981' },  // emerald
-  'other':        { label: 'Other Income',         icon: 'Wallet',      color: '#8B5CF6' },  // violet
+  'ai-projects':   { label: 'AI & Online Projects', icon: 'Brain',          color: '#6366F1' },
+  'delivery':      { label: 'Delivery',             icon: 'Truck',          color: '#F59E0B' },
+  'factory':       { label: 'Factory Work',         icon: 'Factory',        color: '#10B981' },
+  'freelance':     { label: 'Freelance / Contract', icon: 'PenTool',        color: '#EC4899' },
+  'tutoring':      { label: 'Tutoring / Teaching',  icon: 'GraduationCap',  color: '#14B8A6' },
+  'rideshare':     { label: 'Rideshare',            icon: 'Car',            color: '#EAB308' },
+  'tips':          { label: 'Tips',                 icon: 'HandCoins',      color: '#F97316' },
+  'investments':   { label: 'Investments / Returns',icon: 'TrendingUp',     color: '#22C55E' },
+  'rental-income': { label: 'Rental Income',        icon: 'Building',       color: '#0EA5E9' },
+  'reselling':     { label: 'Reselling / Flipping', icon: 'RefreshCw',      color: '#A855F7' },
+  'other':         { label: 'Other Income',         icon: 'Wallet',         color: '#8B5CF6' },
 };
 ```
 
@@ -48,6 +55,9 @@ const EXPENSE_CATEGORIES = {
   'personal-care':    { label: 'Personal Care',        group: 'lifestyle',     icon: 'Sparkles',      color: '#8B5CF6' },
   'clothing':         { label: 'Clothing',             group: 'lifestyle',     icon: 'Shirt',         color: '#A855F7' },
   'subscriptions':    { label: 'Subscriptions',        group: 'lifestyle',     icon: 'Repeat',        color: '#7C3AED' },
+  'fitness':          { label: 'Fitness',              group: 'lifestyle',     icon: 'Dumbbell',      color: '#F43F5E' },
+  'skincare-beauty':  { label: 'Skincare / Beauty',    group: 'lifestyle',     icon: 'Droplets',      color: '#E879F9' },
+  'home-improvement': { label: 'Home Improvement',     group: 'lifestyle',     icon: 'Hammer',        color: '#FB923C' },
 
   // GROWTH — investing in yourself
   'certifications':   { label: 'Certifications',       group: 'growth',        icon: 'Award',         color: '#3B82F6' },
