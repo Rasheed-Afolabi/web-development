@@ -1,4 +1,4 @@
-export type IncomeStream = 'ai-projects' | 'delivery' | 'factory' | 'other';
+export type IncomeStream = 'ai-projects' | 'delivery' | 'factory' | 'freelance' | 'tutoring' | 'rideshare' | 'tips' | 'investments' | 'rental-income' | 'reselling' | 'other';
 
 export type ExpenseCategoryGroup = 'essentials' | 'earning-costs' | 'lifestyle' | 'growth' | 'commitments';
 

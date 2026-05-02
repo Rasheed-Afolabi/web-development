@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SearchableSelect } from '@/components/forms/SearchableSelect';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { INCOME_STREAMS, INCOME_STREAM_IDS } from '@/data/income-streams';
-import { EXPENSE_CATEGORIES } from '@/data/expense-categories';
+import { EXPENSE_CATEGORIES, CATEGORY_GROUPS } from '@/data/expense-categories';
 import { parseDollarsToCents } from '@/lib/formatters';
 import type { IncomeStream } from '@/types';
 
@@ -34,6 +34,34 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
   const showCustomName =
     (type === 'expense' && category === 'miscellaneous') ||
     (type === 'income' && incomeStream === 'other');
+
+  const categoryOptions = useMemo(
+    () =>
+      Object.entries(allExpenseCategories).map(([id, cat]) => ({
+        value: id,
+        label: cat.label,
+        group: cat.group,
+      })),
+    [allExpenseCategories],
+  );
+
+  const categoryGroupLabels = useMemo(
+    () =>
+      CATEGORY_GROUPS.reduce<Record<string, string>>((acc, g) => {
+        acc[g.id] = g.label;
+        return acc;
+      }, {}),
+    [],
+  );
+
+  const incomeOptions = useMemo(
+    () =>
+      INCOME_STREAM_IDS.map((id) => ({
+        value: id,
+        label: INCOME_STREAMS[id].label,
+      })),
+    [],
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,37 +152,22 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
       </div>
 
       {type === 'expense' ? (
-        <div>
-          <Label className="text-text-secondary text-xs">Category</Label>
-          <Select value={category} onValueChange={(v) => setCategory(v ?? '')}>
-            <SelectTrigger className="mt-1 bg-bg-tertiary border-border-subtle text-text-primary">
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent className="bg-bg-elevated border-border-subtle">
-              {Object.entries(allExpenseCategories).map(([id, cat]) => (
-                <SelectItem key={id} value={id} className="text-text-primary">
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SearchableSelect
+          label="Category"
+          options={categoryOptions}
+          value={category}
+          onChange={setCategory}
+          placeholder="Search categories..."
+          groupLabels={categoryGroupLabels}
+        />
       ) : (
-        <div>
-          <Label className="text-text-secondary text-xs">Income Stream</Label>
-          <Select value={incomeStream} onValueChange={(v) => setIncomeStream((v ?? '') as IncomeStream | '')}>
-            <SelectTrigger className="mt-1 bg-bg-tertiary border-border-subtle text-text-primary">
-              <SelectValue placeholder="Select stream" />
-            </SelectTrigger>
-            <SelectContent className="bg-bg-elevated border-border-subtle">
-              {INCOME_STREAM_IDS.map((id) => (
-                <SelectItem key={id} value={id} className="text-text-primary">
-                  {INCOME_STREAMS[id].label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <SearchableSelect
+          label="Income Stream"
+          options={incomeOptions}
+          value={incomeStream}
+          onChange={(v) => setIncomeStream(v as IncomeStream | '')}
+          placeholder="Search income streams..."
+        />
       )}
 
       {showCustomName && (

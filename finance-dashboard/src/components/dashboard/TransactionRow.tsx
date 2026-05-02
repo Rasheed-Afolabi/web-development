@@ -1,17 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { Transaction, IncomeStream } from '@/types';
 import { formatCurrency, formatDate, parseDollarsToCents, centsToDollars } from '@/lib/formatters';
 import { CategoryBadge } from './CategoryBadge';
 import { INCOME_STREAMS, INCOME_STREAM_IDS } from '@/data/income-streams';
-import { EXPENSE_CATEGORIES } from '@/data/expense-categories';
+import { EXPENSE_CATEGORIES, CATEGORY_GROUPS } from '@/data/expense-categories';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { useCategoryStore } from '@/stores/useCategoryStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SearchableSelect } from '@/components/forms/SearchableSelect';
 import { format } from 'date-fns';
 
 interface TransactionRowProps {
@@ -25,6 +25,34 @@ export function TransactionRow({ transaction, showDate = false }: TransactionRow
   const customCategories = useCategoryStore((s) => s.customCategories);
   const allExpenseCategories = { ...EXPENSE_CATEGORIES, ...customCategories };
   const isIncome = transaction.type === 'income';
+
+  const categoryOptions = useMemo(
+    () =>
+      Object.entries(allExpenseCategories).map(([id, cat]) => ({
+        value: id,
+        label: cat.label,
+        group: cat.group,
+      })),
+    [allExpenseCategories],
+  );
+
+  const categoryGroupLabels = useMemo(
+    () =>
+      CATEGORY_GROUPS.reduce<Record<string, string>>((acc, g) => {
+        acc[g.id] = g.label;
+        return acc;
+      }, {}),
+    [],
+  );
+
+  const incomeOptions = useMemo(
+    () =>
+      INCOME_STREAM_IDS.map((id) => ({
+        value: id,
+        label: INCOME_STREAMS[id].label,
+      })),
+    [],
+  );
 
   const [showEdit, setShowEdit] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -157,37 +185,22 @@ export function TransactionRow({ transaction, showDate = false }: TransactionRow
             </div>
 
             {transaction.type === 'expense' ? (
-              <div>
-                <Label className="text-text-secondary text-xs">Category</Label>
-                <Select value={editCategory} onValueChange={(v) => setEditCategory(v ?? '')}>
-                  <SelectTrigger className="mt-1 bg-bg-tertiary border-border-subtle text-text-primary">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-bg-elevated border-border-subtle">
-                    {Object.entries(allExpenseCategories).map(([id, cat]) => (
-                      <SelectItem key={id} value={id} className="text-text-primary">
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <SearchableSelect
+                label="Category"
+                options={categoryOptions}
+                value={editCategory}
+                onChange={setEditCategory}
+                placeholder="Search categories..."
+                groupLabels={categoryGroupLabels}
+              />
             ) : (
-              <div>
-                <Label className="text-text-secondary text-xs">Income Stream</Label>
-                <Select value={editIncomeStream} onValueChange={(v) => setEditIncomeStream((v ?? '') as IncomeStream | '')}>
-                  <SelectTrigger className="mt-1 bg-bg-tertiary border-border-subtle text-text-primary">
-                    <SelectValue placeholder="Select stream" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-bg-elevated border-border-subtle">
-                    {INCOME_STREAM_IDS.map((id) => (
-                      <SelectItem key={id} value={id} className="text-text-primary">
-                        {INCOME_STREAMS[id].label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <SearchableSelect
+                label="Income Stream"
+                options={incomeOptions}
+                value={editIncomeStream}
+                onChange={(v) => setEditIncomeStream(v as IncomeStream | '')}
+                placeholder="Search income streams..."
+              />
             )}
 
             <div>
