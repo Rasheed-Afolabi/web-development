@@ -10,6 +10,10 @@ import { triggerBackup } from '@/lib/backup';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { useGoalStore } from '@/stores/useGoalStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
+import { useRecurringStore } from '@/stores/useRecurringStore';
+import { useNetWorthStore } from '@/stores/useNetWorthStore';
+import { useDebtStore } from '@/stores/useDebtStore';
+import { useEnvelopeStore } from '@/stores/useEnvelopeStore';
 
 export function App() {
   // Subscribe to store changes for backup
@@ -19,6 +23,10 @@ export function App() {
       useTransactionStore.subscribe(triggerBackup),
       useGoalStore.subscribe(triggerBackup),
       useSettingsStore.subscribe(triggerBackup),
+      useRecurringStore.subscribe(triggerBackup),
+      useNetWorthStore.subscribe(triggerBackup),
+      useDebtStore.subscribe(triggerBackup),
+      useEnvelopeStore.subscribe(triggerBackup),
     ];
     return () => {
       stopSync();

@@ -9,37 +9,69 @@ import {
   GoalsList,
   RecentActivity,
   BigPicture,
+  RecurringBillsWidget,
+  CashFlowForecastWidget,
+  NetWorthWidget,
+  DebtPayoffWidget,
+  EnvelopeDashboardWidget,
 } from '@/components/dashboard/RFDWidgets';
 
+import { InsightCard } from '@/components/dashboard/InsightCard';
+import { MemberBreakdownWidget } from '@/components/dashboard/MemberBreakdownWidget';
+import { DashboardFilterBar } from '@/components/dashboard/DashboardFilterBar';
+import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 import { AddTransactionDialog } from '@/components/forms/AddTransactionDialog';
+import { useSettingsStore } from '@/stores/useSettingsStore';
 
-export function DashboardView() {
+function DashboardContent() {
   const [showBigPicture, setShowBigPicture] = useState(false);
+  const budgetMode = useSettingsStore((s) => s.budgetMode);
 
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-[1400px] mx-auto">
-      {/* Hero — Daily Allowance */}
+      {/* 1. Hero — Daily Allowance (enhanced A3) */}
       <DailyAllowanceHero />
 
-      {/* Row 2: Cash Flow + Weekly Streams */}
+      {/* 2. Filter Bar */}
+      <DashboardFilterBar />
+
+      {/* 3. Cash Flow + Weekly Streams */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CashFlowPulse />
         <WeeklyStreams />
       </div>
 
-      {/* Row 3: Where It Went (donut) + Cost of Earning */}
+      {/* 4. Where It Went / Envelope + Cost of Earning */}
       <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-        <WhereItWent />
+        {budgetMode === 'envelope' ? <EnvelopeDashboardWidget /> : <WhereItWent />}
         <CostOfEarning />
       </div>
 
-      {/* Row 4: Goals + Recent Activity */}
+      {/* 5. Goals + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <GoalsList />
         <RecentActivity />
       </div>
 
-      {/* Big Picture Toggle */}
+      {/* 6. Smart Insights (enhanced A1) */}
+      <InsightCard />
+
+      {/* 7. Recurring Bills (B1) */}
+      <RecurringBillsWidget />
+
+      {/* 8. Cash Flow Forecast (B2) */}
+      <CashFlowForecastWidget />
+
+      {/* 9. Net Worth + Debt Payoff (C) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <NetWorthWidget />
+        <DebtPayoffWidget />
+      </div>
+
+      {/* 10. Member Breakdown (E1, conditional on >1 member) */}
+      <MemberBreakdownWidget />
+
+      {/* 11. Big Picture Toggle */}
       <div className="flex justify-center">
         <button
           onClick={() => setShowBigPicture(!showBigPicture)}
@@ -50,8 +82,16 @@ export function DashboardView() {
       </div>
       <BigPicture visible={showBigPicture} />
 
-      {/* Floating Add Transaction */}
+      {/* 12. Floating Add Transaction */}
       <AddTransactionDialog />
     </div>
+  );
+}
+
+export function DashboardView() {
+  return (
+    <DashboardFilterProvider>
+      <DashboardContent />
+    </DashboardFilterProvider>
   );
 }

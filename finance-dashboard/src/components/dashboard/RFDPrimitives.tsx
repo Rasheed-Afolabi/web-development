@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type ReactNode, type ElementType } from 'react';
+import { useEffect, useState, useRef, useCallback, type ReactNode, type ElementType } from 'react';
 
 // ---------- Currency / number helpers ----------
 
@@ -68,7 +68,7 @@ interface CardProps {
 export function RFDCard({ children, className = '', padding = 'p-6', as: Tag = 'div', ...rest }: CardProps) {
   return (
     <Tag
-      className={`rfd-card relative rounded-2xl border border-[#1F2937] bg-[#12131A] ${padding} ${className}`}
+      className={`rfd-card relative rounded-2xl border border-[#1F2937] bg-[#0D1117] ${padding} ${className}`}
       {...rest}
     >
       {children}
@@ -115,7 +115,7 @@ export function SectionTitle({ eyebrow, title, action, stack }: SectionTitleProp
   if (stack) {
     return (
       <div className="mb-4">
-        {eyebrow && <p className="text-[10px] font-semibold tracking-[0.18em] text-[#5A5A72] uppercase mb-1">{eyebrow}</p>}
+        {eyebrow && <p className="text-[10px] font-semibold tracking-[0.18em] text-[#7A8BA0] uppercase mb-1">{eyebrow}</p>}
         <h2 className="font-display text-[20px] font-semibold text-[#F0F0F5] tracking-tight leading-tight whitespace-nowrap">{title}</h2>
         {action && <div className="mt-2">{action}</div>}
       </div>
@@ -123,7 +123,7 @@ export function SectionTitle({ eyebrow, title, action, stack }: SectionTitleProp
   }
   return (
     <div className="mb-4">
-      {eyebrow && <p className="text-[10px] font-semibold tracking-[0.18em] text-[#5A5A72] uppercase mb-1">{eyebrow}</p>}
+      {eyebrow && <p className="text-[10px] font-semibold tracking-[0.18em] text-[#7A8BA0] uppercase mb-1">{eyebrow}</p>}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h2 className="font-display text-[20px] font-semibold text-[#F0F0F5] tracking-tight leading-tight whitespace-nowrap">{title}</h2>
         {action && <div className="flex-shrink-0 max-w-full">{action}</div>}
@@ -178,5 +178,174 @@ export function Sparkline({ values, color = '#60A5FA', height = 32, fill = true 
       {fill && <path d={areaPath} fill={color} opacity="0.12" />}
       <path d={linePath} fill="none" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+// ---------- Collapsible Section ----------
+
+const COLLAPSE_STORAGE_KEY = 'rfd-collapse-state';
+
+function getCollapseState(): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setCollapseState(id: string, expanded: boolean) {
+  const state = getCollapseState();
+  state[id] = expanded;
+  localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state));
+}
+
+interface CollapsibleSectionProps {
+  widgetId: string;
+  defaultExpanded?: boolean;
+  eyebrow?: string;
+  title: string;
+  action?: ReactNode;
+  stack?: boolean;
+  children: ReactNode;
+}
+
+export function CollapsibleSection({
+  widgetId,
+  defaultExpanded = true,
+  eyebrow,
+  title,
+  action,
+  stack,
+  children,
+}: CollapsibleSectionProps) {
+  const stored = getCollapseState()[widgetId];
+  const [expanded, setExpanded] = useState(stored ?? defaultExpanded);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = useState<string>(expanded ? 'none' : '0px');
+
+  const toggle = useCallback(() => {
+    setExpanded((prev) => {
+      const next = !prev;
+      setCollapseState(widgetId, next);
+      return next;
+    });
+  }, [widgetId]);
+
+  useEffect(() => {
+    if (expanded) {
+      const el = contentRef.current;
+      if (el) {
+        setMaxHeight(el.scrollHeight + 'px');
+        const t = setTimeout(() => setMaxHeight('none'), 300);
+        return () => clearTimeout(t);
+      }
+    } else {
+      const el = contentRef.current;
+      if (el) {
+        setMaxHeight(el.scrollHeight + 'px');
+        requestAnimationFrame(() => setMaxHeight('0px'));
+      }
+    }
+  }, [expanded]);
+
+  const chevron = (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="transition-transform duration-300"
+      style={{ transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+    >
+      <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  return (
+    <div>
+      <button
+        onClick={toggle}
+        className="w-full text-left flex items-start gap-2 group cursor-pointer mb-4"
+        aria-expanded={expanded}
+      >
+        <span className="text-[#7A8BA0] group-hover:text-[#9898B0] mt-0.5 transition-colors flex-shrink-0">
+          {chevron}
+        </span>
+        <div className="flex-1 min-w-0">
+          {stack ? (
+            <div>
+              {eyebrow && (
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-[#7A8BA0] uppercase mb-1">
+                  {eyebrow}
+                </p>
+              )}
+              <h2 className="font-display text-[20px] font-semibold text-[#F0F0F5] tracking-tight leading-tight whitespace-nowrap">
+                {title}
+              </h2>
+              {action && <div className="mt-2">{action}</div>}
+            </div>
+          ) : (
+            <div>
+              {eyebrow && (
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-[#7A8BA0] uppercase mb-1">
+                  {eyebrow}
+                </p>
+              )}
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <h2 className="font-display text-[20px] font-semibold text-[#F0F0F5] tracking-tight leading-tight whitespace-nowrap">
+                  {title}
+                </h2>
+                {action && <div className="flex-shrink-0 max-w-full">{action}</div>}
+              </div>
+            </div>
+          )}
+        </div>
+      </button>
+      <div
+        ref={contentRef}
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{ maxHeight, opacity: expanded ? 1 : 0 }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Delta Indicator ----------
+
+interface DeltaIndicatorProps {
+  currentValue: number;
+  previousValue: number;
+  format?: 'percent' | 'currency';
+  className?: string;
+}
+
+export function DeltaIndicator({ currentValue, previousValue, format = 'percent', className = '' }: DeltaIndicatorProps) {
+  if (previousValue === 0 && currentValue === 0) return null;
+
+  const diff = currentValue - previousValue;
+  const pctChange = previousValue !== 0 ? (diff / previousValue) * 100 : currentValue > 0 ? 100 : 0;
+  const isPositive = diff >= 0;
+  const color = isPositive ? 'text-[#34D399]' : 'text-[#F87171]';
+
+  let label: string;
+  if (format === 'currency') {
+    label = (isPositive ? '+' : '') + fmtUSD(diff, 0);
+  } else {
+    label = (isPositive ? '+' : '') + pctChange.toFixed(0) + '%';
+  }
+
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-medium ${color} ${className}`}>
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path
+          d={isPositive ? 'M5 2L8 6H2L5 2Z' : 'M5 8L2 4H8L5 8Z'}
+          fill="currentColor"
+        />
+      </svg>
+      {label}
+    </span>
   );
 }
