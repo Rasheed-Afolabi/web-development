@@ -2,50 +2,61 @@
 
 ## Overview
 
-Single-page application with four main views accessible via a sidebar/tab navigation. All data persists in localStorage as structured JSON. No backend, no authentication, no server — this runs entirely in the browser.
+Single-page application with three main views accessible via a sidebar/tab navigation. All data persists in localStorage as structured JSON. No backend, no authentication, no server — this runs entirely in the browser.
 
 ## Views
 
-### 1. Daily Snapshot (`/daily`)
-- Today's total spend vs. daily budget allowance
-- Quick-add transaction form (always visible)
-- Mini category breakdown for today
-- "Remaining today" counter that updates live
+### 1. Dashboard (`/dashboard`) — THE PRIMARY VIEW
+The single rich dashboard that answers "where is my money going and coming back?" with time-range filter pills.
 
-### 2. Weekly Review (`/weekly`) — THE PRIMARY VIEW
-- This is the Sunday ritual screen. It should feel like opening a financial magazine about your own life.
-- 7-day spending bar chart (each bar split by category)
-- Income vs. Expenses comparison (side-by-side or overlaid)
-- Category pie/donut chart for the week
-- Savings progress for the week vs. weekly target
-- "On Track / Off Track / Danger" status indicator with visual weight
-- Top 3 spending categories highlighted
-- Week-over-week trend arrow (up/down/flat)
+**Time Range Filters**: Today, This Week, This Month, Last Month, All Time, Custom
 
-### 3. Monthly Overview (`/monthly`)
-- 30-day trend line (cumulative spend)
-- Month-over-month comparison bars
-- Category breakdown (expandable)
-- Income stream breakdown (which stream contributed most)
-- Net savings for the month
-- Projected month-end balance based on current pace
+**Widgets (in order):**
+1. **KPI Row** — Total Income, Total Expenses, Net Saved, Savings Rate
+2. **Cash Flow Bar Chart** — Income vs expense bars (auto-aggregates to weeks for ranges > 14 days)
+3. **Category Donut** — Click a slice to drill into that category's transactions
+4. **Income Streams Breakdown** — Horizontal bars per income source
+5. **Insight Cards** — Auto-generated text: top expense, savings rate, top earner, transaction count
+6. **Spending Heatmap** — GitHub-style calendar grid, last 6 months, colored by spend intensity
+7. **Cumulative Spending Trend** — Area chart showing spend accumulation over time
+8. **Category Treemap** — Rectangles sized by spend amount
+9. **Money Flow Sankey** — Income sources → Total Income → expense groups
+10. **Recent Transactions** — Expandable list with edit/delete
+11. **Floating "Add" Button** — Opens transaction form in a dialog
 
-### 4. Goal Tracker (`/goal`)
-- The $30K thermometer — large, animated, center-stage
-- Projected completion date based on current savings rate
-- "Gap to Goal" — how much more per week/month to hit target
-- Monthly savings waterfall chart (showing each month's contribution)
-- Milestone markers ($5K, $10K, $15K, $20K, $25K, $30K)
-- Streak counter — consecutive weeks meeting savings target
+### 2. Goals (`/goals`)
+Flexible multi-goal tracker:
+- Create multiple goals with custom names ("Emergency Fund", "New Car", etc.)
+- Tab between goals when multiple exist
+- Each goal has: savings thermometer, stats column, gap-to-goal rates, projected completion
+- Monthly savings waterfall chart
+- Dynamic milestones (auto-calculated from target amount, not hardcoded)
+- Add/edit/delete goals via dialogs
+
+### 3. Settings (`/settings`)
+- Weekly income targets per stream
+- "Manage Goals" link (redirects to Goals page)
+- Data management: Export CSV, Export JSON, Import CSV, Clear All Data
+- Data summary stats
 
 ## State Management (Zustand)
 
 ```
 stores/
 ├── useTransactionStore.ts   # All income & expense transactions
-├── useGoalStore.ts          # Savings goals, targets, milestones
+├── useGoalStore.ts          # Multiple savings goals (array) + activeGoalId
 ├── useCategoryStore.ts      # Category definitions (extensible)
 └── useSettingsStore.ts      # User preferences, income targets per stream
+```
+
+### Goal Store Shape (v2)
+```typescript
+interface GoalState {
+  goals: SavingsGoal[];        // Array of goals
+  activeGoalId: string | null; // Currently viewed goal
+  addGoal, updateGoal, deleteGoal, setActiveGoal
+  hydrateGoal()                // Legacy v1 migration support
+}
 ```
 
 ### Transaction Store Shape
@@ -62,10 +73,21 @@ interface Transaction {
 }
 ```
 
+## Custom Hooks
+
+```
+hooks/
+├── useTransactions.ts       # Filter & aggregate transactions by date range
+├── useGoalProgress.ts       # Goal progress calculation (reads active goal by ID)
+├── useDashboardFilter.ts    # Time range preset state + date calculation
+└── useAnimatedNumber.ts     # Smooth number counting animation
+```
+
 ## Data Persistence
 
 - All Zustand stores use `persist` middleware with localStorage.
 - On every state change, a debounced (500ms) JSON snapshot is saved under `rasko-finance-backup`.
+- Schema version 2: multi-goal format with auto-migration from v1 (single goal).
 - CSV export function available from settings — exports all transactions as downloadable file.
 - CSV import parses columns: date, type, amount, category, note.
 
@@ -74,41 +96,65 @@ interface Transaction {
 ```
 App
 ├── Layout
-│   ├── Sidebar (navigation + quick stats)
+│   ├── Sidebar (3 nav items + QuickStats)
 │   └── MainContent
-│       ├── DailyView
-│       │   ├── DailyBudgetMeter
-│       │   ├── QuickAddForm
-│       │   └── TodayTransactionList
-│       ├── WeeklyView
-│       │   ├── WeeklyIncomeExpenseChart
-│       │   ├── CategoryDonutChart
-│       │   ├── SavingsProgressCard
-│       │   ├── StatusIndicator
-│       │   └── WeeklyInsights
-│       ├── MonthlyView
-│       │   ├── MonthlyTrendLine
-│       │   ├── MonthComparisonBars
+│       ├── DashboardView
+│       │   ├── TimeRangeFilter (pill row + custom date inputs)
+│       │   ├── KPI Row (4 DataCards with animated numbers)
+│       │   ├── IncomeExpenseBarChart (daily or weekly aggregation)
+│       │   ├── CategoryDonutChart (with drill-down on click)
 │       │   ├── IncomeStreamBreakdown
-│       │   └── CategoryDetailPanel
-│       └── GoalView
-│           ├── SavingsThermometer
-│           ├── ProjectionCard
-│           ├── MilestoneTracker
-│           └── WaterfallChart
-└── Modals
-    ├── AddTransactionModal
-    ├── EditTransactionModal
-    ├── DataExportModal
-    └── SettingsModal
+│       │   ├── InsightCard (auto-generated text insights)
+│       │   ├── SpendingHeatmap (GitHub-style grid)
+│       │   ├── MonthlyTrendLine (cumulative spending)
+│       │   ├── CategoryTreemap
+│       │   ├── SankeyFlowChart (income → expenses)
+│       │   ├── TransactionList (expandable)
+│       │   └── AddTransactionDialog (floating button)
+│       ├── GoalView
+│       │   ├── Goal Tabs (when multiple goals)
+│       │   ├── SavingsThermometer
+│       │   ├── Stats Column (saved, remaining, gap-to-goal, projected)
+│       │   ├── WaterfallChart (monthly savings)
+│       │   └── Dynamic Milestones
+│       └── SettingsView
+│           ├── IncomeTargetForm
+│           ├── Manage Goals Link
+│           └── Data Management (import/export/clear)
+└── Dialogs
+    ├── AddTransactionDialog
+    ├── EditTransactionDialog
+    ├── GoalForm Dialog (create/edit)
+    └── Delete Confirmation Dialog
 ```
 
 ## Routing
 
-Use React Router v6 with these routes:
-- `/` → redirects to `/weekly` (Sunday is the default experience)
-- `/daily` → DailyView
-- `/weekly` → WeeklyView
-- `/monthly` → MonthlyView
-- `/goal` → GoalView
-- `/settings` → SettingsView (income targets, categories, data management)
+React Router v6 (HashRouter):
+- `/` → redirects to `/dashboard`
+- `/dashboard` → DashboardView
+- `/goals` → GoalView
+- `/settings` → SettingsView
+- `/daily`, `/weekly`, `/monthly`, `/goal` → legacy redirects to new routes
+
+## Key Calculations
+
+### Dashboard Time Filtering
+```typescript
+// Auto-aggregation: if range > 14 days, aggregate bars by week
+const barData = rangeDays > 14
+  ? aggregateByWeek(transactions, start, end)
+  : dailyTotals;
+```
+
+### Sankey Data Flow
+```typescript
+// Builds: income sources → "Total Income" → expense category groups
+buildSankeyData(byIncomeStream, byCategoryGroup)
+```
+
+### Dynamic Milestones
+```typescript
+// Auto-calculates N evenly-spaced milestones from target amount
+generateMilestones(targetAmount, count = 6)
+```

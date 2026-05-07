@@ -5,6 +5,10 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useGoalStore } from '@/stores/useGoalStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useTransactionStore } from '@/stores/useTransactionStore';
+import { useRecurringStore } from '@/stores/useRecurringStore';
+import { useNetWorthStore } from '@/stores/useNetWorthStore';
+import { useDebtStore } from '@/stores/useDebtStore';
+import { useEnvelopeStore } from '@/stores/useEnvelopeStore';
 
 type SyncPhase = 'loading' | 'syncing' | 'synced' | 'offline' | 'error';
 
@@ -184,6 +188,10 @@ export function initializeAppSync() {
     useGoalStore.subscribe(scheduleRemoteSave),
     useSettingsStore.subscribe(scheduleRemoteSave),
     useCategoryStore.subscribe(scheduleRemoteSave),
+    useRecurringStore.subscribe(scheduleRemoteSave),
+    useNetWorthStore.subscribe(scheduleRemoteSave),
+    useDebtStore.subscribe(scheduleRemoteSave),
+    useEnvelopeStore.subscribe(scheduleRemoteSave),
   ];
 
   void hydrateState();

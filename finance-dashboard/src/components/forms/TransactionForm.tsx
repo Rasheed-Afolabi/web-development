@@ -30,6 +30,7 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
   const [note, setNote] = useState('');
   const [customName, setCustomName] = useState('');
   const [error, setError] = useState('');
+  const [splitSuggestion, setSplitSuggestion] = useState<{ amount: number } | null>(null);
 
   const showCustomName =
     (type === 'expense' && category === 'miscellaneous') ||
@@ -101,6 +102,12 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
       date,
       note: finalNote,
     });
+
+    // Show split suggestion for income
+    if (type === 'income' && cents >= 1000) {
+      setSplitSuggestion({ amount: cents });
+      setTimeout(() => setSplitSuggestion(null), 5000);
+    }
 
     setAmount('');
     setCategory('');
@@ -216,6 +223,36 @@ export function TransactionForm({ defaultType = 'expense', onSuccess }: Transact
         <Plus size={16} className="mr-1" />
         Add {type === 'income' ? 'Income' : 'Expense'}
       </Button>
+
+      {splitSuggestion && (
+        <div className="rounded-lg border border-[#1E3A6B] bg-[#0F1F36] p-3 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <p className="text-[11px] font-semibold text-[#60A5FA] uppercase tracking-wider">Income Split Suggestion</p>
+          <div className="flex gap-1.5">
+            {[
+              { label: 'Save', pct: 20, color: '#34D399' },
+              { label: 'Bills', pct: 30, color: '#FBBF24' },
+              { label: 'Spend', pct: 50, color: '#60A5FA' },
+            ].map((seg) => (
+              <div key={seg.label} className="flex-1">
+                <div
+                  className="h-2 rounded-full"
+                  style={{ background: seg.color }}
+                />
+                <p className="text-[10px] font-mono mt-1 text-center" style={{ color: seg.color }}>
+                  {seg.label} · ${((splitSuggestion.amount * seg.pct) / 10000).toFixed(0)}
+                </p>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setSplitSuggestion(null)}
+            className="text-[10px] text-[#7A8BA0] hover:text-[#9898B0] transition-colors"
+          >
+            Got it
+          </button>
+        </div>
+      )}
     </form>
   );
 }

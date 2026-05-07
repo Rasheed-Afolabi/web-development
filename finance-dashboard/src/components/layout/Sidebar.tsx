@@ -1,14 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { CalendarDays, CalendarRange, CalendarCheck, Target, Settings, Cloud, CloudOff, Loader2, AlertTriangle } from 'lucide-react';
+import { LayoutDashboard, Target, Settings, Cloud, CloudOff, Loader2, AlertTriangle } from 'lucide-react';
 import { QuickStats } from '@/components/layout/QuickStats';
 import { useAppSyncStatus } from '@/lib/app-sync';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/daily', label: 'Daily', Icon: CalendarDays },
-  { to: '/weekly', label: 'Weekly', Icon: CalendarRange },
-  { to: '/monthly', label: 'Monthly', Icon: CalendarCheck },
-  { to: '/goal', label: 'Goal', Icon: Target },
+  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+  { to: '/goals', label: 'Goals', Icon: Target },
   { to: '/settings', label: 'Settings', Icon: Settings },
 ];
 
@@ -50,7 +48,7 @@ export function Sidebar() {
   const syncStatus = useAppSyncStatus();
 
   return (
-    <aside className="hidden md:flex w-64 min-h-screen bg-[#05192D] border-r border-[#1A3A5C] flex-col">
+    <aside className="hidden md:flex w-64 min-h-screen bg-[#0C1222] border-r border-[#161F33] flex-col">
       <div className="p-6 pb-5 space-y-3">
         <div>
           <h1 className="font-display font-bold text-xl text-white tracking-tight">
@@ -72,8 +70,8 @@ export function Sidebar() {
             className={({ isActive }) =>
               `flex min-h-11 items-center gap-3 px-4 py-3 rounded-xl text-sm font-body font-medium transition-all duration-200 mb-1 ${
                 isActive
-                  ? 'bg-[#0D2847] text-white border border-[#1A3A5C]'
-                  : 'text-[#8BA4BE] hover:bg-[#0D2847] hover:text-white border border-transparent'
+                  ? 'bg-[#141C2E] text-white border border-[#1C2740]'
+                  : 'text-[#8BA4BE] hover:bg-[#141C2E] hover:text-white border border-transparent'
               }`
             }
           >
@@ -87,4 +85,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

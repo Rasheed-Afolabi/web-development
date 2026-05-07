@@ -6,15 +6,17 @@ import { ChartTooltip } from './ChartTooltip';
 
 interface CategoryDonutChartProps {
   data: Record<string, number>;
+  onSegmentClick?: (categoryId: string) => void;
 }
 
-export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
+export function CategoryDonutChart({ data, onSegmentClick }: CategoryDonutChartProps) {
   const customCategories = useCategoryStore((s) => s.customCategories);
   const allCategories = { ...EXPENSE_CATEGORIES, ...customCategories };
 
   const chartData = Object.entries(data)
     .filter(([, amount]) => amount > 0)
     .map(([id, amount]) => ({
+      id,
       name: allCategories[id]?.label || id,
       value: amount,
       color: allCategories[id]?.color || '#6B7280',
@@ -39,6 +41,11 @@ export function CategoryDonutChart({ data }: CategoryDonutChartProps) {
             nameKey="name"
             animationDuration={1000}
             animationEasing="ease-out"
+            onClick={onSegmentClick ? (_, index) => {
+              const entry = chartData[index];
+              if (entry) onSegmentClick(entry.id);
+            } : undefined}
+            style={onSegmentClick ? { cursor: 'pointer' } : undefined}
           >
             {chartData.map((entry, i) => (
               <Cell key={i} fill={entry.color} stroke="transparent" />

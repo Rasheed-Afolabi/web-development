@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { startOfDay, endOfDay } from 'date-fns';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useGoalProgress } from '@/hooks/useGoalProgress';
+import { useGoalStore } from '@/stores/useGoalStore';
 import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { formatCurrency } from '@/lib/formatters';
 import { getWeekRange } from '@/lib/calculations';
@@ -21,6 +22,10 @@ export function QuickStats() {
   const todayData = useTransactions(todayStart, todayEnd);
   const weekData = useTransactions(weekStart, weekEnd);
   const progress = useGoalProgress();
+  const activeGoal = useGoalStore((s) => {
+    const id = s.activeGoalId;
+    return s.goals.find((g) => g.id === id) ?? s.goals[0] ?? null;
+  });
 
   const animatedPercent = useAnimatedNumber(progress.percentComplete * 100);
 
@@ -74,7 +79,9 @@ export function QuickStats() {
       {/* Goal divider */}
       <div className="flex items-center gap-2">
         <div className="h-px flex-1 bg-[#1A3A5C]" />
-        <span className="text-text-muted text-[10px] font-body uppercase tracking-wider">Goal</span>
+        <span className="text-text-muted text-[10px] font-body uppercase tracking-wider">
+          {activeGoal?.name || 'Goal'}
+        </span>
         <div className="h-px flex-1 bg-[#1A3A5C]" />
       </div>
 

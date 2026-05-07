@@ -35,43 +35,6 @@ Pre-defined categories. User can add custom categories from Settings.
 
 ```typescript
 type ExpenseCategoryGroup = 'essentials' | 'earning-costs' | 'lifestyle' | 'growth' | 'commitments';
-
-const EXPENSE_CATEGORIES = {
-  // ESSENTIALS — non-negotiable living costs
-  'rent-housing':     { label: 'Rent / Housing',      group: 'essentials',    icon: 'Home',          color: '#EF4444' },
-  'groceries':        { label: 'Groceries',            group: 'essentials',    icon: 'ShoppingCart',  color: '#F97316' },
-  'utilities':        { label: 'Utilities',            group: 'essentials',    icon: 'Zap',           color: '#EAB308' },
-  'phone-data':       { label: 'Phone / Data Plan',    group: 'essentials',    icon: 'Smartphone',    color: '#84CC16' },
-  'health':           { label: 'Health / Medical',     group: 'essentials',    icon: 'Heart',         color: '#EC4899' },
-
-  // COST OF EARNING — expenses directly tied to making money
-  'gas-fuel':         { label: 'Gas / Fuel',           group: 'earning-costs', icon: 'Fuel',          color: '#F59E0B' },
-  'car-maintenance':  { label: 'Car Maintenance',      group: 'earning-costs', icon: 'Wrench',        color: '#D97706' },
-  'platform-fees':    { label: 'Platform Fees',        group: 'earning-costs', icon: 'CreditCard',    color: '#B45309' },
-
-  // LIFESTYLE — discretionary spending
-  'dining-out':       { label: 'Dining Out',           group: 'lifestyle',     icon: 'UtensilsCrossed', color: '#14B8A6' },
-  'entertainment':    { label: 'Entertainment',        group: 'lifestyle',     icon: 'Film',          color: '#06B6D4' },
-  'personal-care':    { label: 'Personal Care',        group: 'lifestyle',     icon: 'Sparkles',      color: '#8B5CF6' },
-  'clothing':         { label: 'Clothing',             group: 'lifestyle',     icon: 'Shirt',         color: '#A855F7' },
-  'subscriptions':    { label: 'Subscriptions',        group: 'lifestyle',     icon: 'Repeat',        color: '#7C3AED' },
-  'fitness':          { label: 'Fitness',              group: 'lifestyle',     icon: 'Dumbbell',      color: '#F43F5E' },
-  'skincare-beauty':  { label: 'Skincare / Beauty',    group: 'lifestyle',     icon: 'Droplets',      color: '#E879F9' },
-  'home-improvement': { label: 'Home Improvement',     group: 'lifestyle',     icon: 'Hammer',        color: '#FB923C' },
-
-  // GROWTH — investing in yourself
-  'certifications':   { label: 'Certifications',       group: 'growth',        icon: 'Award',         color: '#3B82F6' },
-  'education':        { label: 'Education / Learning', group: 'growth',        icon: 'BookOpen',      color: '#2563EB' },
-  'immigration-legal':{ label: 'Immigration / Legal',  group: 'growth',        icon: 'Scale',         color: '#1D4ED8' },
-
-  // COMMITMENTS — recurring obligations
-  'tithe-giving':     { label: 'Tithe / Giving',       group: 'commitments',   icon: 'HandHeart',     color: '#059669' },
-  'insurance':        { label: 'Insurance',            group: 'commitments',   icon: 'Shield',        color: '#047857' },
-  'debt-payments':    { label: 'Debt Payments',        group: 'commitments',   icon: 'TrendingDown',  color: '#DC2626' },
-
-  // CATCH-ALL
-  'miscellaneous':    { label: 'Miscellaneous',        group: 'lifestyle',     icon: 'MoreHorizontal', color: '#6B7280' },
-};
 ```
 
 ### Category Groups Purpose
@@ -83,25 +46,51 @@ The dashboard groups expenses by these meta-categories in visualizations:
 - **Growth** — "You invest these in future-you"
 - **Commitments** — "These are promised to others"
 
-This grouping powers the "where is my money really going?" insight on the Weekly Review.
+This grouping powers the Sankey flow chart and insight cards on the Dashboard.
 
-## Goal Calculation Engine
+## Goal System — Flexible Multi-Goal
 
-### The $30K / 6-Month Goal
+Goals are no longer locked to a single $30K/6-month target. Users can create multiple goals with custom names and targets.
 
+### SavingsGoal Type
 ```typescript
 interface SavingsGoal {
-  targetAmount: number;        // 3000000 (cents) = $30,000
-  startDate: string;           // ISO date when tracking began
-  endDate: string;             // 6 months from startDate
-  currentSaved: number;        // sum of (income - expenses) since startDate
+  id: string;                    // uuid
+  name: string;                  // e.g. "Emergency Fund", "New Car"
+  targetAmount: number;          // in cents
+  startDate: string;             // ISO date when tracking began
+  endDate: string;               // target completion date
 }
+```
 
-// Derived calculations
+### Multi-Goal Store
+```typescript
+// Goals stored as array with active selection
+goals: SavingsGoal[]
+activeGoalId: string | null
+
+// Operations
+addGoal(goal)      // Create new goal, auto-selects it
+updateGoal(id)     // Edit name, target, dates
+deleteGoal(id)     // Remove goal, auto-selects next
+setActiveGoal(id)  // Switch between goals
+```
+
+### Dynamic Milestones
+```typescript
+// Auto-calculates evenly-spaced milestones from any target amount
+generateMilestones(targetAmount: number, count: number = 6): number[]
+// e.g. $30,000 → [$5K, $10K, $15K, $20K, $25K, $30K]
+// e.g. $8,000  → [$1.3K, $2.7K, $4K, $5.3K, $6.7K, $8K]
+```
+
+### Goal Progress Calculation
+```typescript
 const totalDays = daysBetween(goal.startDate, goal.endDate);
 const elapsedDays = daysBetween(goal.startDate, today);
 const remainingDays = totalDays - elapsedDays;
-const remainingAmount = goal.targetAmount - goal.currentSaved;
+const currentSaved = totalIncome - totalExpenses; // since goal start date
+const remainingAmount = goal.targetAmount - currentSaved;
 
 const requiredDailyRate = remainingAmount / remainingDays;
 const requiredWeeklyRate = requiredDailyRate * 7;
@@ -109,8 +98,8 @@ const requiredMonthlyRate = requiredDailyRate * 30;
 
 // Pace indicator
 const expectedByNow = (goal.targetAmount / totalDays) * elapsedDays;
-const paceStatus = goal.currentSaved >= expectedByNow ? 'on-track'
-                 : goal.currentSaved >= expectedByNow * 0.85 ? 'off-track'
+const paceStatus = currentSaved >= expectedByNow ? 'on-track'
+                 : currentSaved >= expectedByNow * 0.85 ? 'off-track'
                  : 'danger';
 ```
 
@@ -122,11 +111,29 @@ const paceStatus = goal.currentSaved >= expectedByNow ? 'on-track'
 | Off Track | Saved is 85-99% of pace     | Amber pulse, level trend icon   |
 | Danger    | Saved < 85% of pace         | Red alert, downward trend icon  |
 
+### Data Schema Migration (v1 → v2)
+
+Old v1 format (single goal):
+```json
+{ "goal": { "targetAmount": 3000000, "startDate": "...", "endDate": "..." } }
+```
+
+New v2 format (multi-goal):
+```json
+{
+  "goals": [{ "id": "...", "name": "Savings Goal", "targetAmount": 3000000, ... }],
+  "activeGoalId": "..."
+}
+```
+
+Migration is automatic: when v1 data is loaded, it's converted to v2 with a generated ID and default name "Savings Goal".
+
 ## Data Validation Rules
 
 - Transaction amount must be > 0
 - Transaction date cannot be in the future
 - Every expense must have a category
 - Every income must have an income stream
-- Goal target amount must be > current saved amount
+- Goal name must not be empty
+- Goal target amount must be > 0
 - Weekly income targets per stream must be ≥ 0
