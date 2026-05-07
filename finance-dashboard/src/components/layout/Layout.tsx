@@ -1,15 +1,13 @@
 import { useMemo } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { CalendarDays, CalendarRange, CalendarCheck, Target, Settings } from 'lucide-react';
+import { LayoutDashboard, Target, Settings } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { useAppSyncStatus } from '@/lib/app-sync';
 import { cn } from '@/lib/utils';
 
 const mobileNavItems = [
-  { to: '/daily', label: 'Daily', Icon: CalendarDays },
-  { to: '/weekly', label: 'Weekly', Icon: CalendarRange },
-  { to: '/monthly', label: 'Monthly', Icon: CalendarCheck },
-  { to: '/goal', label: 'Goal', Icon: Target },
+  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+  { to: '/goals', label: 'Goals', Icon: Target },
   { to: '/settings', label: 'Settings', Icon: Settings },
 ];
 
@@ -19,10 +17,8 @@ export function Layout() {
 
   const titleMap = useMemo(
     () => ({
-      '/daily': 'Daily Snapshot',
-      '/weekly': 'Weekly Review',
-      '/monthly': 'Monthly Overview',
-      '/goal': 'Goal Tracker',
+      '/dashboard': 'Dashboard',
+      '/goals': 'Goals',
       '/settings': 'Settings',
     }),
     [],

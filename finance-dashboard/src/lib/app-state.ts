@@ -4,13 +4,16 @@ import { useCategoryStore } from '@/stores/useCategoryStore';
 import { useGoalStore } from '@/stores/useGoalStore';
 import { useSettingsStore } from '@/stores/useSettingsStore';
 import { useTransactionStore } from '@/stores/useTransactionStore';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface AppSnapshot {
   schemaVersion: number;
   instanceId: string;
   updatedAt: string;
   transactions: Transaction[];
-  goal: SavingsGoal;
+  goal?: { targetAmount: number; startDate: string; endDate: string };
+  goals?: SavingsGoal[];
+  activeGoalId?: string | null;
   weeklyIncomeTargets: Record<IncomeStream, number>;
   customCategories: Record<string, ExpenseCategory>;
 }
@@ -31,15 +34,12 @@ export function buildSnapshotFromStores(instanceId: string): AppSnapshot {
   const categoryState = useCategoryStore.getState();
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     instanceId,
     updatedAt: new Date().toISOString(),
     transactions,
-    goal: {
-      targetAmount: goalState.targetAmount,
-      startDate: goalState.startDate,
-      endDate: goalState.endDate,
-    },
+    goals: goalState.goals,
+    activeGoalId: goalState.activeGoalId,
     weeklyIncomeTargets: settingsState.weeklyIncomeTargets,
     customCategories: categoryState.customCategories,
   };
@@ -47,14 +47,29 @@ export function buildSnapshotFromStores(instanceId: string): AppSnapshot {
 
 export function applySnapshotToStores(snapshot: AppSnapshot) {
   useTransactionStore.getState().hydrateTransactions(snapshot.transactions ?? []);
-  useGoalStore.getState().hydrateGoal(snapshot.goal);
+
+  // Handle v1 → v2 migration (single goal → array)
+  if (snapshot.goals && snapshot.goals.length > 0) {
+    // v2 format: multi-goal
+    // Ensure all goals have id and name
+    const goals = snapshot.goals.map((g) => ({
+      ...g,
+      id: g.id || uuidv4(),
+      name: g.name || 'Savings Goal',
+    }));
+    useGoalStore.getState().hydrateGoals(goals, snapshot.activeGoalId ?? goals[0]?.id ?? null);
+  } else if (snapshot.goal) {
+    // v1 format: single goal → migrate
+    useGoalStore.getState().hydrateGoal(snapshot.goal);
+  }
+
   useSettingsStore.getState().hydrateSettings(snapshot.weeklyIncomeTargets);
   useCategoryStore.getState().hydrateCategories(snapshot.customCategories ?? {});
 }
 
 export function readLegacySnapshot(instanceId: string): AppSnapshot | null {
   const transactions = parseJson<Transaction[]>(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS));
-  const goal = parseJson<SavingsGoal>(localStorage.getItem(STORAGE_KEYS.GOAL));
+  const goal = parseJson<{ targetAmount: number; startDate: string; endDate: string }>(localStorage.getItem(STORAGE_KEYS.GOAL));
   const weeklyIncomeTargets = parseJson<Record<IncomeStream, number>>(
     localStorage.getItem(STORAGE_KEYS.SETTINGS),
   );
@@ -75,7 +90,9 @@ export function readLegacySnapshot(instanceId: string): AppSnapshot | null {
   return {
     ...fallback,
     transactions: transactions ?? fallback.transactions,
-    goal: goal ?? fallback.goal,
+    goal: goal ?? undefined,
+    goals: fallback.goals,
+    activeGoalId: fallback.activeGoalId,
     weeklyIncomeTargets: weeklyIncomeTargets ?? fallback.weeklyIncomeTargets,
     customCategories: customCategories ?? fallback.customCategories,
   };

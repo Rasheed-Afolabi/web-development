@@ -29,9 +29,18 @@ export interface Transaction {
 }
 
 export interface SavingsGoal {
+  id: string;
+  name: string;
   targetAmount: number; // in cents
   startDate: string; // ISO date
   endDate: string; // ISO date
+}
+
+export type TimeRangePreset = 'today' | 'this-week' | 'this-month' | 'last-month' | 'all-time' | 'custom';
+
+export interface DateRange {
+  start: Date;
+  end: Date;
 }
 
 export interface WeeklyIncomeTarget {

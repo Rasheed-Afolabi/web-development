@@ -2,9 +2,7 @@ import { useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Layout } from '@/components/layout/Layout';
-import { DailyView } from '@/views/DailyView';
-import { WeeklyView } from '@/views/WeeklyView';
-import { MonthlyView } from '@/views/MonthlyView';
+import { DashboardView } from '@/views/DashboardView';
 import { GoalView } from '@/views/GoalView';
 import { SettingsView } from '@/views/SettingsView';
 import { initializeAppSync } from '@/lib/app-sync';
@@ -33,12 +31,15 @@ export function App() {
       <TooltipProvider>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Navigate to="/weekly" replace />} />
-            <Route path="/daily" element={<DailyView />} />
-            <Route path="/weekly" element={<WeeklyView />} />
-            <Route path="/monthly" element={<MonthlyView />} />
-            <Route path="/goal" element={<GoalView />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<DashboardView />} />
+            <Route path="/goals" element={<GoalView />} />
             <Route path="/settings" element={<SettingsView />} />
+            {/* Legacy redirects */}
+            <Route path="/daily" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/weekly" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/monthly" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/goal" element={<Navigate to="/goals" replace />} />
           </Route>
         </Routes>
       </TooltipProvider>

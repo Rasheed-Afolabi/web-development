@@ -1,14 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { CalendarDays, CalendarRange, CalendarCheck, Target, Settings, Cloud, CloudOff, Loader2, AlertTriangle } from 'lucide-react';
+import { LayoutDashboard, Target, Settings, Cloud, CloudOff, Loader2, AlertTriangle } from 'lucide-react';
 import { QuickStats } from '@/components/layout/QuickStats';
 import { useAppSyncStatus } from '@/lib/app-sync';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/daily', label: 'Daily', Icon: CalendarDays },
-  { to: '/weekly', label: 'Weekly', Icon: CalendarRange },
-  { to: '/monthly', label: 'Monthly', Icon: CalendarCheck },
-  { to: '/goal', label: 'Goal', Icon: Target },
+  { to: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+  { to: '/goals', label: 'Goals', Icon: Target },
   { to: '/settings', label: 'Settings', Icon: Settings },
 ];
 
@@ -87,4 +85,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

@@ -1,10 +1,10 @@
 # Rasko Finance Command Center
 
-A personal finance dashboard for tracking variable income across multiple streams, managing daily/weekly expenses by category, and hitting a 6-month $30K savings goal. Built for one user (Rasko) who reviews finances every Sunday.
+A personal finance dashboard for tracking variable income across multiple streams, managing expenses by category, and tracking progress toward multiple custom savings goals. Built as a single rich dashboard with interactive visualizations.
 
 ## Tech Stack
 
-- **Framework**: React 18+ with TypeScript (strict mode)
+- **Framework**: React 19+ with TypeScript (strict mode)
 - **Build**: Vite
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Charts**: Recharts (all visual data representations)
@@ -16,18 +16,24 @@ A personal finance dashboard for tracking variable income across multiple stream
 ```
 src/
 ├── components/
-│   ├── layout/          # Shell, sidebar, navigation
-│   ├── dashboard/       # Main dashboard widgets and cards
-│   ├── charts/          # All Recharts visual components
-│   ├── forms/           # Transaction entry, income logging
+│   ├── layout/          # Shell, sidebar, navigation (3-page nav)
+│   ├── dashboard/       # Dashboard widgets: TimeRangeFilter, InsightCard, etc.
+│   ├── charts/          # All Recharts components + SpendingHeatmap, CategoryTreemap, SankeyFlowChart
+│   ├── forms/           # TransactionForm, GoalForm, AddTransactionDialog, SearchableSelect
 │   └── ui/              # shadcn/ui primitives
-├── hooks/               # Custom React hooks (useTransactions, useGoals, etc.)
+├── hooks/               # Custom React hooks (useTransactions, useGoalProgress, useDashboardFilter)
 ├── lib/                 # Utilities, calculations, formatters
 ├── stores/              # State management (Zustand)
-├── types/               # TypeScript interfaces and enums
+├── types/               # TypeScript interfaces
 ├── data/                # Default categories, constants
-└── views/               # Page-level components (Daily, Weekly, Monthly, Goal)
+└── views/               # Page-level components (Dashboard, Goal, Settings)
 ```
+
+## Navigation (3 pages)
+
+- **Dashboard** (`/dashboard`) — Single rich page with all financial widgets and time-range filter pills
+- **Goals** (`/goals`) — Multi-goal tracker with tabs, thermometer, milestones, waterfall chart
+- **Settings** (`/settings`) — Income targets, data management (import/export), link to manage goals
 
 ## Commands
 
@@ -45,6 +51,8 @@ src/
 - All monetary values stored in cents (integers) to avoid floating-point errors. Display as dollars with 2 decimal places.
 - localStorage is the single source of truth. Every write triggers a JSON export to prevent data loss.
 - Categories are pre-defined but user-extensible. See @docs/DOMAIN.md for the full category taxonomy.
+- Goals are flexible: multiple goals with custom names, targets, and timeframes. Milestones are auto-calculated.
+- Data schema version 2: supports multi-goal array with auto-migration from v1 single-goal format.
 
 ## Code Style
 

@@ -136,12 +136,12 @@ Create this manually in Google Calendar:
 
 ### What to Do During Sunday Review
 
-1. Open the dashboard → Weekly Review tab
-2. Check the Status Indicator (On Track / Off Track / Danger)
-3. Review category spending — where did money go this week?
-4. Log any missing transactions from the week
-5. Compare income vs. expenses for the week
-6. Check the Goal Tracker — are you on pace for $30K?
+1. Open the dashboard → set time filter to "This Week"
+2. Check KPI row — income, expenses, net saved, savings rate
+3. Review category donut — click slices to drill into transactions
+4. Log any missing transactions via the floating "+" button
+5. Check the Sankey flow — where is money going?
+6. Switch to Goals page — check pace status for your active goal
 7. Adjust next week's approach based on what you see
 8. Export a CSV backup (monthly — first Sunday of each month)
 

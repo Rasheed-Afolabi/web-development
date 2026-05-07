@@ -1,17 +1,18 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DataCard } from '@/components/dashboard/DataCard';
-import { GoalForm } from '@/components/forms/GoalForm';
 import { IncomeTargetForm } from '@/components/forms/IncomeTargetForm';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { exportTransactionsToCSV, parseCSVToTransactions, downloadCSV } from '@/lib/csv';
-import { Download, Upload, Trash2, Database } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Target } from 'lucide-react';
 import { format } from 'date-fns';
 import { getBackupJson } from '@/lib/backup';
 
 export function SettingsView() {
+  const navigate = useNavigate();
   const transactions = useTransactionStore((s) => s.transactions);
   const importTransactions = useTransactionStore((s) => s.importTransactions);
   const clearAll = useTransactionStore((s) => s.clearAll);
@@ -74,13 +75,20 @@ export function SettingsView() {
           <IncomeTargetForm />
         </DataCard>
 
-        {/* Goal Settings */}
+        {/* Goals Link */}
         <DataCard index={1}>
-          <h3 className="font-heading font-semibold text-lg text-text-primary mb-4">Savings Goal</h3>
+          <h3 className="font-heading font-semibold text-lg text-text-primary mb-4">Savings Goals</h3>
           <p className="text-text-secondary text-sm font-body mb-4">
-            Configure your savings goal target, start and end dates.
+            Create and manage multiple savings goals with custom targets and timelines.
           </p>
-          <GoalForm />
+          <Button
+            onClick={() => navigate('/goals')}
+            variant="outline"
+            className="border-border-subtle text-text-primary hover:bg-bg-tertiary"
+          >
+            <Target size={16} className="mr-2" />
+            Manage Goals
+          </Button>
         </DataCard>
 
         <Separator className="bg-border-subtle" />

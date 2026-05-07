@@ -6,27 +6,27 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Design system colors — DataCamp-inspired light theme */
-  --color-bg-primary: #F0F2F5;
-  --color-bg-secondary: #FFFFFF;
-  --color-bg-tertiary: #E8ECF1;
-  --color-bg-elevated: #FFFFFF;
+  /* Dark theme matching prototype */
+  --color-bg-primary: #0A0A12;
+  --color-bg-secondary: #12131A;
+  --color-bg-tertiary: #1A1A24;
+  --color-bg-elevated: #1A1A24;
 
-  --color-text-primary: #1A1F36;
-  --color-text-secondary: #4E5D78;
-  --color-text-muted: #8492A6;
+  --color-text-primary: #F0F0F5;
+  --color-text-secondary: #9898B0;
+  --color-text-muted: #5A5A72;
 
-  --color-accent-green: #06C167;
-  --color-accent-green-dim: #E6F9EF;
-  --color-accent-amber: #F5A623;
-  --color-accent-amber-dim: #FFF8E6;
-  --color-accent-red: #E53E3E;
-  --color-accent-red-dim: #FEE6E6;
-  --color-accent-blue: #3B82F6;
-  --color-accent-indigo: #6366F1;
+  --color-accent-green: #34D399;
+  --color-accent-green-dim: #0E2A1F;
+  --color-accent-amber: #FBBF24;
+  --color-accent-amber-dim: #2B1F08;
+  --color-accent-red: #F87171;
+  --color-accent-red-dim: #2B0F11;
+  --color-accent-blue: #60A5FA;
+  --color-accent-indigo: #818CF8;
 
-  --color-border-subtle: #E2E8F0;
-  --color-border-active: #CBD5E1;
+  --color-border-subtle: #1F2937;
+  --color-border-active: #2A3441;
 
   /* Fonts */
   --font-display: 'Instrument Sans', sans-serif;
@@ -35,11 +35,11 @@
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'DM Sans', sans-serif;
 
-  --radius-card: 12px;
+  --radius-card: 16px;
 
   /* Animations */
-  --animate-fade-in-up: fade-in-up 0.3s ease-out;
-  --animate-pulse-green: pulse-green 2s ease-in-out infinite;
+  --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-green: pulse-green 1.8s ease-in-out infinite;
   --animate-pulse-red: pulse-red 1.5s ease-in-out infinite;
   --animate-pulse-amber: pulse-amber 2s ease-in-out infinite;
   --animate-liquid-rise: liquid-rise 1.5s ease-out forwards;
@@ -86,51 +86,45 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* DataCamp-inspired theme */
+/* Dark theme */
 :root {
-  --background: #F0F2F5;
-  --foreground: #1A1F36;
-  --card: #FFFFFF;
-  --card-foreground: #1A1F36;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A1F36;
-  --primary: #3B82F6;
-  --primary-foreground: #FFFFFF;
-  --secondary: #E8ECF1;
-  --secondary-foreground: #1A1F36;
-  --muted: #F0F2F5;
-  --muted-foreground: #4E5D78;
-  --accent: #E8ECF1;
-  --accent-foreground: #1A1F36;
-  --destructive: #E53E3E;
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #3B82F6;
-  --chart-1: #06C167;
-  --chart-2: #3B82F6;
-  --chart-3: #F5A623;
-  --chart-4: #E53E3E;
-  --chart-5: #6366F1;
+  --background: #0A0A12;
+  --foreground: #F0F0F5;
+  --card: #12131A;
+  --card-foreground: #F0F0F5;
+  --popover: #1A1A24;
+  --popover-foreground: #F0F0F5;
+  --primary: #60A5FA;
+  --primary-foreground: #0A0A12;
+  --secondary: #1A1A24;
+  --secondary-foreground: #F0F0F5;
+  --muted: #12131A;
+  --muted-foreground: #9898B0;
+  --accent: #1A1A24;
+  --accent-foreground: #F0F0F5;
+  --destructive: #F87171;
+  --border: #1F2937;
+  --input: #1F2937;
+  --ring: #60A5FA;
+  --chart-1: #34D399;
+  --chart-2: #60A5FA;
+  --chart-3: #FBBF24;
+  --chart-4: #F87171;
+  --chart-5: #818CF8;
   --radius: 0.75rem;
   --sidebar: #05192D;
   --sidebar-foreground: #E2E8F0;
-  --sidebar-primary: #3B82F6;
+  --sidebar-primary: #60A5FA;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #0D2847;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #1A3A5C;
-  --sidebar-ring: #3B82F6;
+  --sidebar-ring: #60A5FA;
 }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse-green {
@@ -153,10 +147,84 @@
   to { height: var(--fill-height); }
 }
 
+/* Prototype animations */
+@keyframes rfdBarGrow {
+  0%   { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes rfdBarFill {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes rfdDonutSweep {
+  0% { stroke-dasharray: 0 9999; }
+}
+
+@keyframes rfdPulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50%      { box-shadow: 0 0 0 4px transparent; opacity: 0.6; }
+}
+
+.rfd-bar-grow {
+  transform-origin: bottom;
+  animation: rfdBarGrow 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.rfd-bar-fill {
+  transform-origin: left;
+  animation: rfdBarFill 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.rfd-donut-seg {
+  animation: rfdDonutSweep 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: stroke-width 0.2s ease;
+}
+
+.rfd-pulse {
+  animation: rfdPulse 1.8s ease-in-out infinite;
+}
+
+.rfd-card {
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.rfd-card:hover {
+  border-color: #2A3441;
+}
+
+.rfd-hero {
+  background: linear-gradient(180deg, #14151D 0%, #0F1018 100%);
+}
+.rfd-hero-glow {
+  background: radial-gradient(600px 220px at 80% -10%, rgba(52,211,153,0.12), transparent 60%);
+}
+
+.rfd-bigpicture {
+  background: linear-gradient(180deg, #0F1F36 0%, #0A0F1E 100%);
+  border-color: #1E3A6B;
+}
+
+.rfd-scroll::-webkit-scrollbar { width: 6px; }
+.rfd-scroll::-webkit-scrollbar-thumb { background: #2A2A3E; border-radius: 6px; }
+.rfd-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Staggered page entrance */
+main > div > * {
+  animation: fade-in-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+main > div > *:nth-child(1) { animation-delay: 0ms; }
+main > div > *:nth-child(2) { animation-delay: 60ms; }
+main > div > *:nth-child(3) { animation-delay: 120ms; }
+main > div > *:nth-child(4) { animation-delay: 180ms; }
+main > div > *:nth-child(5) { animation-delay: 240ms; }
+main > div > *:nth-child(6) { animation-delay: 300ms; }
+main > div > *:nth-child(7) { animation-delay: 360ms; }
+
 /* Base styles */
 html {
-  background-color: #F0F2F5;
-  color: #1A1F36;
+  background-color: #0A0A12;
+  color: #F0F0F5;
 }
 
 body {
@@ -176,16 +244,20 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F0F2F5;
+  background: #0A0A12;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #2A2A3E;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #3A3A5E;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 @layer base {

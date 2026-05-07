@@ -20,10 +20,19 @@ interface IncomeExpenseBarChartProps {
   data: DayData[];
 }
 
+function formatLabel(date: string): string {
+  // If it looks like an ISO date (yyyy-MM-dd), format as day of week
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return formatDayOfWeek(date);
+  }
+  // Otherwise it's already a formatted label (e.g. "May 5" from weekly aggregation)
+  return date;
+}
+
 export function IncomeExpenseBarChart({ data }: IncomeExpenseBarChartProps) {
   const chartData = data.map((d) => ({
     ...d,
-    day: formatDayOfWeek(d.date),
+    day: formatLabel(d.date),
   }));
 
   return (

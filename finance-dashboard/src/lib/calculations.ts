@@ -7,7 +7,10 @@ import {
   parseISO,
   format,
   eachDayOfInterval,
+  eachWeekOfInterval,
   isWithinInterval,
+  addDays,
+  min as dateMin,
 } from 'date-fns';
 import type { Transaction, PaceStatus, GoalProgress, SavingsGoal, ExpenseCategoryGroup } from '@/types';
 import { EXPENSE_CATEGORIES } from '@/data/expense-categories';
@@ -165,4 +168,81 @@ export function getTopCategories(
     .map(([category, amount]) => ({ category, amount }))
     .sort((a, b) => b.amount - a.amount)
     .slice(0, count);
+}
+
+export function aggregateByWeek(
+  transactions: Transaction[],
+  start: Date,
+  end: Date,
+): { date: string; income: number; expense: number }[] {
+  const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 1 });
+  const byDate = groupByDate(transactions);
+
+  return weeks.map((weekStart) => {
+    const weekEnd = dateMin([addDays(weekStart, 6), end]);
+    const days = eachDayOfInterval({ start: weekStart, end: weekEnd });
+    let income = 0;
+    let expense = 0;
+    for (const day of days) {
+      const key = format(day, 'yyyy-MM-dd');
+      const dayTxns = byDate[key] || [];
+      income += sumTransactions(dayTxns, 'income');
+      expense += sumTransactions(dayTxns, 'expense');
+    }
+    return {
+      date: format(weekStart, 'MMM d'),
+      income,
+      expense,
+    };
+  });
+}
+
+export interface SankeyNode {
+  name: string;
+}
+
+export interface SankeyLink {
+  source: number;
+  target: number;
+  value: number;
+}
+
+export function buildSankeyData(
+  byIncomeStream: Record<string, number>,
+  byCategoryGroup: Record<string, number>,
+): { nodes: SankeyNode[]; links: SankeyLink[] } {
+  const nodes: SankeyNode[] = [];
+  const links: SankeyLink[] = [];
+
+  // Income source nodes
+  const incomeEntries = Object.entries(byIncomeStream).filter(([, v]) => v > 0);
+  for (const [stream] of incomeEntries) {
+    nodes.push({ name: stream });
+  }
+
+  // Central "Total Income" node
+  const totalIncomeIdx = nodes.length;
+  nodes.push({ name: 'Total Income' });
+
+  // Links from income sources → Total Income
+  incomeEntries.forEach(([, amount], i) => {
+    links.push({ source: i, target: totalIncomeIdx, value: amount / 100 });
+  });
+
+  // Expense group nodes
+  const expenseEntries = Object.entries(byCategoryGroup).filter(([, v]) => v > 0);
+  for (const [group] of expenseEntries) {
+    nodes.push({ name: group });
+  }
+
+  // Links from Total Income → expense groups
+  expenseEntries.forEach(([, amount], i) => {
+    links.push({
+      source: totalIncomeIdx,
+      target: totalIncomeIdx + 1 + i,
+      value: amount / 100,
+    });
+  });
+
+  return { nodes, links };
 }
