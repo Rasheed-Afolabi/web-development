@@ -194,7 +194,7 @@ export function InsightCard() {
     <RFDCard>
       <CollapsibleSection
         widgetId="smart-insights"
-        eyebrow="AI-Powered"
+        eyebrow="Auto-Generated"
         title="Smart Insights"
         action={<span className="font-mono text-[11px] text-[#9898B0]">{insights.length} insights</span>}
       >
